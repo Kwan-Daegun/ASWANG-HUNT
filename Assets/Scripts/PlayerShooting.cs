@@ -13,23 +13,19 @@ public class PlayerShooting : MonoBehaviour
 
     void Start()
     {
-        currentAmmo = maxAmmo;       // Fill ammo at start
+        // Load ammo from GlobalData if available
+        currentAmmo = Mathf.Clamp(GlobalData.Ammo, 0, maxAmmo);
         UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
-
     }
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
-        {
             Shoot();
-        }
 
         // Optional: reload manually (press R)
         if (Input.GetKeyDown(KeyCode.R))
-        {
             Reload();
-        }
     }
 
     void Shoot()
@@ -43,63 +39,29 @@ public class PlayerShooting : MonoBehaviour
         }
 
         currentAmmo--;  // Reduce ammo when shooting
-        UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo); // Keep or remove based on your UI setup
+        UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
 
         // 1. Get the mouse position in World space
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0; // Ensure z is 0 for 2D consistency
+        mousePosition.z = 0;
 
         // 2. Calculate the direction vector from the fire point to the mouse
         Vector2 shootDirection = (mousePosition - firePoint.position).normalized;
 
-        // 3. Calculate the rotation angle (optional, but good for visual direction)
+        // 3. Calculate rotation angle
         float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
 
-        // 4. Instantiate the bullet, applying the rotation
+        // 4. Instantiate the bullet with rotation
         GameObject bullet = Instantiate(
             bulletPrefab,
             firePoint.position,
-            Quaternion.Euler(0, 0, angle) // Rotate the bullet to face the direction
+            Quaternion.Euler(0, 0, angle)
         );
 
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-
         if (rb != null)
-        {
-            // 5. Apply velocity in the calculated direction
             rb.velocity = shootDirection * bulletSpeed;
-
-            // You can remove your original scaling logic as the rotation handles the visual direction:
-            // Vector3 bulletScale = bullet.transform.localScale;
-            // bulletScale.x *= direction;
-            // bullet.transform.localScale = bulletScale;
-        }
     }
-
-    /*void Shoot()
-    {
-        if (bulletPrefab == null || firePoint == null) return;
-
-        if (currentAmmo <= 0)
-        {
-            Debug.Log("Out of ammo! Press R to reload.");
-            return;
-        }
-
-        currentAmmo--;   // Reduce ammo when shooting
-        UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
-
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            float direction = transform.localScale.x > 0 ? 1f : -1f;
-            rb.velocity = new Vector2(direction * bulletSpeed, 0f);
-            Vector3 bulletScale = bullet.transform.localScale;
-            bulletScale.x *= direction;
-            bullet.transform.localScale = bulletScale;
-        }
-    }*/
 
     void Reload()
     {
@@ -111,15 +73,22 @@ public class PlayerShooting : MonoBehaviour
     public void AddAmmo(int amount)
     {
         currentAmmo = Mathf.Min(currentAmmo + amount, maxAmmo);
+        UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
     }
 
-    public int GetCurrentAmmo()
+    // --- Persistence Methods ---
+    public void SetAmmo(int amount)
     {
-        return currentAmmo;
+        currentAmmo = Mathf.Clamp(amount, 0, maxAmmo);
+        UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
     }
 
-    public int GetMaxAmmo()
+    public int GetCurrentAmmo() => currentAmmo;
+    public int GetMaxAmmo() => maxAmmo;
+
+    // Automatically save ammo to GlobalData whenever script is disabled (e.g., switching scenes)
+    private void OnDisable()
     {
-        return maxAmmo;
+        GlobalData.Ammo = currentAmmo;
     }
 }
