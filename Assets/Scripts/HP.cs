@@ -15,19 +15,28 @@ public class HP : MonoBehaviour
     [SerializeField] private int bulletDamage = 0;
     float maxBarValue = 100;
 
+    private Vector3 originalBarScale;
+
+    [Header("Status Effects")]
+    public bool isBurning = false; // Is this object currently on fire?
+    private Coroutine burnCoroutine;
+    [SerializeField] private GameObject fireParticleEffect; // Optional: Drag a fire prefab here
+
     void Start()
     {
         BarGO.SetActive(true);
+
+        if (BarGO != null)
+        {
+            originalBarScale = BarGO.transform.localScale;
+        }
     }
 
     public void AddHealth(float number)
     {
         if (number <= 0) return;
         currentBarValue = Mathf.Clamp(currentBarValue + number, 0, maxBarValue);
-        /*if (currentBarValue >= maxBarValue)
-        {
-            //off the player's collider
-        }*/
+
         float fill = currentBarValue / maxBarValue;
         BarMask.fillAmount = fill;
     }
@@ -36,64 +45,125 @@ public class HP : MonoBehaviour
     {
         if (number <= 0) return;
         currentBarValue = Mathf.Clamp(currentBarValue - number, 0, maxBarValue);
-        /*if (currentBarValue >= maxBarValue)
-        {
-            //off the player's collider
-        }*/
+
         float fill = currentBarValue / maxBarValue;
         BarMask.fillAmount = fill;
     }
 
     private void Update()
     {
+        // Bar flipping logic
+        if (BarGO != null)
+        {
+            if (transform.localScale.x < 0)
+            {
+                Vector3 newScale = originalBarScale;
+                newScale.x = -Mathf.Abs(originalBarScale.x);
+                BarGO.transform.localScale = newScale;
+            }
+            else
+            {
+                Vector3 newScale = originalBarScale;
+                newScale.x = Mathf.Abs(originalBarScale.x);
+                BarGO.transform.localScale = newScale;
+            }
+        }
+
+        // Death Logic
         if (currentBarValue <= 0)
         {
             if (type == "Enemy")
             {
-                Main.MinusEnemyCounter();
-                print(Main.lvl + " lvl");
-                print(Main.enemyCounter + "EC");
+                // Assuming Main class handles static counters
+                // Main.MinusEnemyCounter(); 
 
-                //  Link to EnemyAI for item drop
                 EnemyAI enemyAI = GetComponent<EnemyAI>();
                 if (enemyAI != null)
                 {
                     enemyAI.Die();
-                    return; // ensure Die() handles destroy
+                    return;
                 }
             }
 
+            // If House or Player dies
             Destroy(gameObject);
-            BarGO.SetActive(false);
+            if (BarGO != null) BarGO.SetActive(false);
         }
-
-        //HPGO.transform.rotation = Quaternion.Euler(0, 0, 0);
-        //BarGO.transform.position.x *= Vector(-1f);
-        //BarGO.transform.localScale = new Vector2(1,1);
-        //BarGO.transform.position = new Vector2(BarGO.transform.position.x * -1, BarGO.transform.position.y);
     }
+
+    // ---------------- FIRE SYSTEM START ---------------- //
+
+    public void ApplyBurn(int damagePerTick, float tickRate)
+    {
+        if (isBurning) return; // If already burning, ignore (or you could reset the tick)
+
+        isBurning = true;
+        // Start the infinite loop
+        burnCoroutine = StartCoroutine(BurnProcess(damagePerTick, tickRate));
+
+        Debug.Log(gameObject.name + " CAUGHT FIRE! Find Holy Water!");
+
+        if (fireParticleEffect != null) fireParticleEffect.SetActive(true);
+    }
+
+    // The logic to STOP the fire
+    public void ExtinguishFire()
+    {
+        if (!isBurning) return;
+
+        isBurning = false;
+        if (burnCoroutine != null) StopCoroutine(burnCoroutine);
+
+        Debug.Log(gameObject.name + " was cleansed with Holy Water!");
+
+        if (fireParticleEffect != null) fireParticleEffect.SetActive(false);
+    }
+
+    private IEnumerator BurnProcess(int damage, float rate)
+    {
+        // Infinite loop: Run as long as 'isBurning' is true
+        while (isBurning)
+        {
+            yield return new WaitForSeconds(rate); // Wait for the tick (1.5s)
+
+            // Take damage
+            SubHealth(damage);
+            Debug.Log(gameObject.name + " took burn damage...");
+
+            // If we die from burning, stop the loop
+            if (currentBarValue <= 0) isBurning = false;
+        }
+    }
+    // ---------------- FIRE SYSTEM END ---------------- //
 
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(type == "House")
+        // --- HOLY WATER CHECK ---
+        // If this object (House or Player) is hit by Holy Water while burning...
+        if (collision.CompareTag("HolyWater"))
         {
-            if(collision.CompareTag("Enemy"))
-            {
-                Main.MinusEnemyCounter();
-                print(Main.lvl + " lvl");
+            ExtinguishFire();
+            // Optional: Destroy the water bottle so it looks like it was used up
+            // Destroy(collision.gameObject); 
+        }
 
-                print(Main.enemyCounter + "EC");
-                SubHealth(10 /*enemyDamage*/);
+        // --- EXISTING LOGIC ---
+        if (type == "House")
+        {
+            if (collision.CompareTag("Enemy"))
+            {
+                // Main.MinusEnemyCounter();
+                SubHealth(10);
             }
         }
 
-        if(type == "Enemy")
+        if (type == "Enemy")
         {
-            if(collision.CompareTag("Bullet"))
+            if (collision.CompareTag("Bullet"))
             {
-                SubHealth(bulletDamage /*bulletDamage*/);
-            }            
+                SubHealth(bulletDamage);
+            }
         }
     }
 
@@ -103,7 +173,7 @@ public class HP : MonoBehaviour
         {
             if (collision.collider.CompareTag("Enemy"))
             {
-                SubHealth(5 /*enemyDamage*/);
+                SubHealth(5);
             }
         }
     }
@@ -114,8 +184,7 @@ public class HP : MonoBehaviour
         {
             if (collision.collider.CompareTag("Enemy"))
             {
-                
-                SubHealth(1 /*enemyDamage*/);
+                SubHealth(1);
             }
         }
     }
