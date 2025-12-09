@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2158012811131688413}
   - component: {fileID: 215451600888689650}
   - component: {fileID: 7120895354613002466}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: HP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 7948625189925568605}
   - component: {fileID: -109748267570726917}
   - component: {fileID: 8148493334391615569}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Tiyanak
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -285,7 +285,7 @@ GameObject:
   - component: {fileID: 7423266135523871641}
   - component: {fileID: 1530630738865390980}
   - component: {fileID: 7093751922507891870}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -375,7 +375,7 @@ GameObject:
   - component: {fileID: 6433546922765935189}
   - component: {fileID: 4723855766332773313}
   - component: {fileID: 522728085816907547}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -476,7 +476,7 @@ GameObject:
   - component: {fileID: 5585352567629804171}
   - component: {fileID: 3127666668112634254}
   - component: {fileID: 3223884275423068444}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
