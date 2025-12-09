@@ -157,5 +157,16 @@ public class GameManager : MonoBehaviour
     public void Home() { Time.timeScale = 1f; SceneManager.LoadScene("newMenu"); }
     public void ExitGame() { Application.Quit(); }
     public void RestartLevel() { Time.timeScale = 1f; SceneManager.LoadScene(SceneManager.GetActiveScene().name); }
-    public void Play() { GlobalData.ResetData(); Main.lvl = 0; Time.timeScale = 1f; SceneManager.LoadScene("LevelOne"); }
+    public void Play() { GlobalData.ResetData(); Main.lvl = 0; Time.timeScale = 1f; SceneManager.LoadScene("Day1"); }
+
+
+    public void Replay()
+    {
+        SceneManager.LoadScene("Day1");
+    }
+
+    public void Exit()
+    {
+        SceneManager.LoadScene("NewMenu");
+    }
 }
