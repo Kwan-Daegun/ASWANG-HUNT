@@ -11,7 +11,7 @@ public class Store : MonoBehaviour
 
     [Header("UI")]
     public GameObject storeUI;       // Assign your store panel here
-    public GameObject interactPrompt; // "Press E" text (optional)
+    //public GameObject interactPrompt; // "Press E" text (optional)
 
     private bool isOpen = false;
 
@@ -24,16 +24,16 @@ public class Store : MonoBehaviour
         // Inside Radius
         if (distance <= interactRadius)
         {
-            if (!isOpen && interactPrompt != null)
-                interactPrompt.SetActive(true);
+            /*if (!isOpen *//*&& interactPrompt*//* != null)
+                //interactPrompt.SetActive(true);*/
 
             if (Input.GetKeyDown(interactKey))
                 ToggleStore();
         }
         else
         {
-            if (interactPrompt != null)
-                interactPrompt.SetActive(false);
+            /*if (interactPrompt != null)
+                interactPrompt.SetActive(false);*/
         }
     }
 
@@ -42,8 +42,8 @@ public class Store : MonoBehaviour
         isOpen = !isOpen;
         storeUI.SetActive(isOpen);
 
-        if (interactPrompt != null)
-            interactPrompt.SetActive(!isOpen);
+        /*if (interactPrompt != null)
+            interactPrompt.SetActive(!isOpen);*/
 
         Time.timeScale = isOpen ? 0f : 1f; // Pause game when opened
     }

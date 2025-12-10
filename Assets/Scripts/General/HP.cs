@@ -7,28 +7,40 @@ using UnityEngine.UI;
 
 public class HP : MonoBehaviour
 {
+    [Header("Settings")]
+    [Tooltip("Set this to 'Player', 'House', or 'Enemy'")]
     [SerializeField] private string type;
+
+    [Header("UI References")]
     [SerializeField] private GameObject HPGO;
     [SerializeField] private GameObject BarGO;
     [SerializeField] private Image BarMask;
+
+    [Header("Stats")]
     [SerializeField] public float currentBarValue;
-    [SerializeField] private int bulletDamage = 0;
+    [SerializeField] private int bulletDamage = 10; // Defaulted to 10 so bullets actually hurt
     float maxBarValue = 100;
 
     private Vector3 originalBarScale;
 
     [Header("Status Effects")]
-    public bool isBurning = false; // Is this object currently on fire?
+    public bool isBurning = false;
     private Coroutine burnCoroutine;
-    [SerializeField] private GameObject fireParticleEffect; // Optional: Drag a fire prefab here
+    [SerializeField] private GameObject fireParticleEffect;
 
     void Start()
     {
-        BarGO.SetActive(true);
-
         if (BarGO != null)
         {
+            BarGO.SetActive(true);
             originalBarScale = BarGO.transform.localScale;
+        }
+
+        // Initialize health fill
+        if (BarMask != null)
+        {
+            float fill = currentBarValue / maxBarValue;
+            BarMask.fillAmount = fill;
         }
     }
 
@@ -37,8 +49,11 @@ public class HP : MonoBehaviour
         if (number <= 0) return;
         currentBarValue = Mathf.Clamp(currentBarValue + number, 0, maxBarValue);
 
-        float fill = currentBarValue / maxBarValue;
-        BarMask.fillAmount = fill;
+        if (BarMask != null)
+        {
+            float fill = currentBarValue / maxBarValue;
+            BarMask.fillAmount = fill;
+        }
     }
 
     public void SubHealth(float number)
@@ -46,13 +61,16 @@ public class HP : MonoBehaviour
         if (number <= 0) return;
         currentBarValue = Mathf.Clamp(currentBarValue - number, 0, maxBarValue);
 
-        float fill = currentBarValue / maxBarValue;
-        BarMask.fillAmount = fill;
+        if (BarMask != null)
+        {
+            float fill = currentBarValue / maxBarValue;
+            BarMask.fillAmount = fill;
+        }
     }
 
     private void Update()
     {
-        // Bar flipping logic
+        // --- BAR FLIPPING LOGIC ---
         if (BarGO != null)
         {
             if (transform.localScale.x < 0)
@@ -69,25 +87,40 @@ public class HP : MonoBehaviour
             }
         }
 
-        // Death Logic
+        // --- DEATH LOGIC ---
         if (currentBarValue <= 0)
         {
+            // 1. If it is an ENEMY
             if (type == "Enemy")
             {
-                // Assuming Main class handles static counters
-                // Main.MinusEnemyCounter(); 
-
                 EnemyAI enemyAI = GetComponent<EnemyAI>();
                 if (enemyAI != null)
                 {
                     enemyAI.Die();
-                    return;
+                    return; // Stop here so we don't trigger the player death logic
                 }
+
+                // Fallback if no AI script:
+                Destroy(gameObject);
             }
 
-            // If House or Player dies
-            Destroy(gameObject);
-            if (BarGO != null) BarGO.SetActive(false);
+            // 2. If it is the PLAYER or the HOUSE
+            else if (type == "Player" || type == "House")
+            {
+                // Trigger the Reset Game function from your Singleton
+                if (DayandNightData.Instance != null)
+                {
+                    DayandNightData.Instance.ResetGame();
+                }
+                else
+                {
+                    Debug.LogError("DayandNightData Instance not found! Can't reset game.");
+                }
+
+                // Destroy object (optional, since scene will reload anyway, but looks cleaner)
+                Destroy(gameObject);
+                if (BarGO != null) BarGO.SetActive(false);
+            }
         }
     }
 
@@ -95,10 +128,9 @@ public class HP : MonoBehaviour
 
     public void ApplyBurn(int damagePerTick, float tickRate)
     {
-        if (isBurning) return; // If already burning, ignore (or you could reset the tick)
+        if (isBurning) return;
 
         isBurning = true;
-        // Start the infinite loop
         burnCoroutine = StartCoroutine(BurnProcess(damagePerTick, tickRate));
 
         Debug.Log(gameObject.name + " CAUGHT FIRE! Find Holy Water!");
@@ -106,7 +138,6 @@ public class HP : MonoBehaviour
         if (fireParticleEffect != null) fireParticleEffect.SetActive(true);
     }
 
-    // The logic to STOP the fire
     public void ExtinguishFire()
     {
         if (!isBurning) return;
@@ -121,16 +152,13 @@ public class HP : MonoBehaviour
 
     private IEnumerator BurnProcess(int damage, float rate)
     {
-        // Infinite loop: Run as long as 'isBurning' is true
         while (isBurning)
         {
-            yield return new WaitForSeconds(rate); // Wait for the tick (1.5s)
+            yield return new WaitForSeconds(rate);
 
-            // Take damage
             SubHealth(damage);
             Debug.Log(gameObject.name + " took burn damage...");
 
-            // If we die from burning, stop the loop
             if (currentBarValue <= 0) isBurning = false;
         }
     }
@@ -140,20 +168,16 @@ public class HP : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // --- HOLY WATER CHECK ---
-        // If this object (House or Player) is hit by Holy Water while burning...
         if (collision.CompareTag("HolyWater"))
         {
             ExtinguishFire();
-            // Optional: Destroy the water bottle so it looks like it was used up
-            // Destroy(collision.gameObject); 
         }
 
-        // --- EXISTING LOGIC ---
+        // --- DAMAGE LOGIC ---
         if (type == "House")
         {
             if (collision.CompareTag("Enemy"))
             {
-                // Main.MinusEnemyCounter();
                 SubHealth(10);
             }
         }

@@ -3,17 +3,30 @@ using UnityEngine.SceneManagement;
 
 public class StoreManager : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Player References")]
     [SerializeField] private HP playerHP;
     [SerializeField] private HP houseHP;
     [SerializeField] private PlayerCoins playerCoinsScript;
     [SerializeField] private PlayerShooting playerShooting;
+    [SerializeField] private PlayerThrowing playerThrowing;
+
+    [Header("Shop Buttons (Drag UI Objects here)")]
+    [SerializeField] private GameObject ammoButton;
+    [SerializeField] private GameObject healingButton;
+    [SerializeField] private GameObject holyWaterButton;
+    [SerializeField] private GameObject buffButton;
+
+    [Header("Prices")]
+    public int ammoPrice = 10;
+    public int healingPrice = 20;   // Suggestion
+    public int holyWaterPrice = 30; // Suggestion
+    public int buffPrice = 50;      // Suggestion
 
     private void Start()
     {
         Time.timeScale = 1f;
 
-        // Load persistent stats
+        // --- 1. Load Persistent Stats ---
         playerHP.currentBarValue = GlobalData.PlayerHealth;
         houseHP.currentBarValue = GlobalData.HouseHealth;
 
@@ -23,9 +36,114 @@ public class StoreManager : MonoBehaviour
         if (playerShooting != null)
             playerShooting.SetAmmo(GlobalData.Ammo);
 
+        if (playerThrowing != null)
+            playerThrowing.holyWaterAmmo = GlobalData.HolyWaterAmmo;
+
+        // --- 2. Update UI ---
         UIManager.Instance.UpdateAmmo(playerShooting.GetCurrentAmmo(), playerShooting.GetMaxAmmo());
         UIManager.Instance.UpdateCoins(playerCoinsScript.coins);
+
+        // --- 3. Shop Locking Logic ---
+        SetupShopForDay();
     }
+
+    private void SetupShopForDay()
+    {
+        int currentDay = DayandNightData.Instance.currentDay;
+
+        // Day 1: Only Ammo
+        if (currentDay == 1)
+        {
+            if (ammoButton) ammoButton.SetActive(true);
+            if (healingButton) healingButton.SetActive(false);
+            if (holyWaterButton) holyWaterButton.SetActive(false);
+            if (buffButton) buffButton.SetActive(false);
+        }
+        // Day 2: Ammo + Healing + Holy Water
+        else if (currentDay == 2)
+        {
+            if (ammoButton) ammoButton.SetActive(true);
+            if (healingButton) healingButton.SetActive(true);
+            if (holyWaterButton) holyWaterButton.SetActive(true);
+            if (buffButton) buffButton.SetActive(false);
+        }
+        // Day 3: Everything unlocked
+        else if (currentDay >= 3)
+        {
+            if (ammoButton) ammoButton.SetActive(true);
+            if (healingButton) healingButton.SetActive(true);
+            if (holyWaterButton) holyWaterButton.SetActive(true);
+            if (buffButton) buffButton.SetActive(true);
+        }
+    }
+
+    // --- BUYING FUNCTIONS ---
+
+    public void BuyAmmo()
+    {
+        if (TrySpendCoins(ammoPrice))
+        {
+            playerShooting.AddAmmo(10);
+            Debug.Log("Bought 10 Ammo");
+        }
+    }
+
+    public void BuyHealing()
+    {
+        if (TrySpendCoins(healingPrice))
+        {
+            playerHP.AddHealth(25); // Heals 25 HP
+            Debug.Log("Bought Healing");
+        }
+    }
+
+    public void BuyHolyWater()
+    {
+        if (TrySpendCoins(holyWaterPrice))
+        {
+            if (playerThrowing != null)
+            {
+                playerThrowing.AddAmmo(3); // Gives 3 Holy Water bottles
+                Debug.Log("Bought 3 Holy Water");
+            }
+        }
+    }
+
+    public void BuyBuff()
+    {
+        // Only allow buying the buff once (Optional check)
+        if (GlobalData.DamageMultiplier > 1.0f)
+        {
+            Debug.Log("Already bought buffs!");
+            return;
+        }
+
+        if (TrySpendCoins(buffPrice))
+        {
+            // Increase Stats in Global Data
+            GlobalData.DamageMultiplier = 1.5f; // 50% more damage
+            GlobalData.SpeedMultiplier = 1.3f;  // 30% faster
+            Debug.Log("PLAYER BUFFED!");
+        }
+    }
+
+    // Helper function to check money and subtract it
+    private bool TrySpendCoins(int cost)
+    {
+        if (playerCoinsScript.coins >= cost)
+        {
+            playerCoinsScript.coins -= cost;
+            UIManager.Instance.UpdateCoins(playerCoinsScript.coins);
+            return true;
+        }
+        else
+        {
+            Debug.Log("Not enough coins!");
+            return false;
+        }
+    }
+
+    // --- SCENE MANAGEMENT ---
 
     private void SaveCurrentStats()
     {
@@ -33,33 +151,12 @@ public class StoreManager : MonoBehaviour
         GlobalData.HouseHealth = houseHP.currentBarValue;
         GlobalData.Coins = playerCoinsScript != null ? playerCoinsScript.coins : GlobalData.Coins;
         GlobalData.Ammo = playerShooting != null ? playerShooting.GetCurrentAmmo() : GlobalData.Ammo;
-    }
-
-    public void HealPlayer(int amount = 10) => playerHP.AddHealth(amount);
-    public void RepairHouse(int amount = 10) => houseHP.AddHealth(amount);
-
-    public void BuyItem(int cost)
-    {
-        if (playerCoinsScript.coins >= cost)
-            playerCoinsScript.coins -= cost;
-        else
-            Debug.Log("Not enough coins!");
-
-        UIManager.Instance.UpdateCoins(playerCoinsScript.coins);
+        GlobalData.HolyWaterAmmo = playerThrowing != null ? playerThrowing.holyWaterAmmo : 0;
     }
 
     public void ContinueToGame()
     {
         SaveCurrentStats();
-        SceneManager.LoadScene("LevelOne");
+        DayandNightData.Instance.StartNight(); // Use the DayandNightData logic
     }
-
-    public void Home()
-    {
-        SaveCurrentStats();
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("newMenu");
-    }
-
-    public void ExitGame() => Application.Quit();
 }

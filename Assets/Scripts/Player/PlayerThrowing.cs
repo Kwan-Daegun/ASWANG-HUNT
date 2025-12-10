@@ -9,17 +9,24 @@ public class PlayerThrowing : MonoBehaviour
     [SerializeField] private Transform throwPoint;
     [SerializeField] private float throwForce = 15f;
 
-    [Header("Ammo & Cooldown")]
-    // Serialized so you can adjust it in Inspector for testing (initially 0)
-    [SerializeField] public int holyWaterAmmo = 0;
-    [SerializeField] private float throwCooldown = 5f; // 5 seconds wait time
+    [Header("Ammo")]
+    public int holyWaterAmmo = 0;
+    [SerializeField] private float throwCooldown = 2f;
 
-    private float nextThrowTime = 0f; // Tracks when we are allowed to throw again
+    private float nextThrowTime = 0f;
     private Collider2D playerCollider;
 
     void Start()
     {
         playerCollider = GetComponent<Collider2D>();
+        // Load from Global Data
+        holyWaterAmmo = GlobalData.HolyWaterAmmo;
+    }
+
+    // Save to Global Data when scene changes
+    private void OnDisable()
+    {
+        GlobalData.HolyWaterAmmo = holyWaterAmmo;
     }
 
     void Update()
@@ -32,25 +39,12 @@ public class PlayerThrowing : MonoBehaviour
 
     void AttemptThrow()
     {
-        // 1. Check Ammo
-        if (holyWaterAmmo <= 0)
-        {
-            Debug.Log("Out of Holy Water! Visit the Shop.");
-            return;
-        }
+        if (holyWaterAmmo <= 0) return;
 
-        // 2. Check Cooldown
-        if (Time.time < nextThrowTime)
-        {
-            float timeRemaining = nextThrowTime - Time.time;
-            Debug.Log("Holy Water on Cooldown: " + timeRemaining.ToString("F1") + "s");
-            return;
-        }
+        if (Time.time < nextThrowTime) return;
 
-        // 3. Throw is Valid
         ThrowAtMouse();
 
-        // Deduct Ammo and Reset Timer
         holyWaterAmmo--;
         nextThrowTime = Time.time + throwCooldown;
     }
@@ -61,19 +55,16 @@ public class PlayerThrowing : MonoBehaviour
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
-
         Vector2 direction = (mousePos - throwPoint.position).normalized;
 
         GameObject bottle = Instantiate(holyWaterPrefab, throwPoint.position, Quaternion.identity);
 
-        // Ignore Player Collision
         Collider2D bottleCollider = bottle.GetComponent<Collider2D>();
         if (playerCollider != null && bottleCollider != null)
         {
             Physics2D.IgnoreCollision(playerCollider, bottleCollider, true);
         }
 
-        // Apply Force
         Rigidbody2D rb = bottle.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
@@ -82,7 +73,6 @@ public class PlayerThrowing : MonoBehaviour
         }
     }
 
-    // Helper function for the Shop later
     public void AddAmmo(int amount)
     {
         holyWaterAmmo += amount;
