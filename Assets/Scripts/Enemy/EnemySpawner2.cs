@@ -1,90 +1,85 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner2 : MonoBehaviour
 {
-    public GameObject[] wave1;
-    public GameObject[] wave2;
-    public GameObject[] wave3;
-    public int currentlvl = 0;
-    public float spawnTime = 2;
-    private float timer;
-    private int currentEnemy = 0;
-    public bool spawning;
-    // Start is called before the first frame update
-    void Start()
+    [Header("Configuration")]
+    // Since this script is on a specific object (Left OR Right), 
+    // we don't need a reference to the "other" side. 
+    // Just spawn at THIS object's position.
+    [SerializeField] private Transform spawnPoint;
+
+    [Header("My Wave Lists")]
+    // PUT ONLY THE ENEMIES FOR THIS SPECIFIC SIDE HERE
+    [SerializeField] private GameObject[] wave1Enemies;
+    [SerializeField] private GameObject[] wave2Enemies;
+    [SerializeField] private GameObject[] wave3Enemies;
+    [SerializeField] private GameObject[] wave4Enemies;
+    //[SerializeField] private GameObject[] wave5Enemies;
+
+    [Header("Timing")]
+    [Tooltip("Set to 0 to spawn all instantly. Set to 0.2 for fast sequence.")]
+    [SerializeField] private float enemySpawnInterval = 0.5f;
+
+    // Internal State
+    public bool isSpawning = false;
+
+    // We don't need Update() anymore. 
+    // The GameManager will check if enemies are dead.
+
+    public void StartWave(int waveIndex)
     {
-        currentlvl++;
-        timer = spawnTime;
-        spawning = true;
+        if (isSpawning) return;
+        StartCoroutine(SpawnRoutine(waveIndex));
     }
 
-    // Update is called once per frame
-    void LateUpdate()
+    IEnumerator SpawnRoutine(int waveIndex)
     {
-        timer -= Time.deltaTime;
-        if (currentlvl != Main.lvl) 
+        isSpawning = true;
+
+        GameObject[] enemiesToSpawn = GetEnemyList(waveIndex);
+
+        // If this side has no enemies for this wave, just finish immediately
+        if (enemiesToSpawn.Length == 0)
         {
-            currentlvl++;
-            currentEnemy = 0;
+            isSpawning = false;
+            yield break;
         }
 
-        if(timer <= 0)
+        for (int i = 0; i < enemiesToSpawn.Length; i++)
         {
-            SpawnEnemy();
-        }             
-        
+            GameObject prefab = enemiesToSpawn[i];
+
+            if (prefab != null)
+            {
+                // Spawn at the Transform assigned in Inspector (Left or Right)
+                GameObject newEnemy = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+
+                // Reset AI Target
+                EnemyAI ai = newEnemy.GetComponent<EnemyAI>();
+                if (ai != null) ai.SetTarget(Vector2.zero);
+            }
+
+            // Simultaneous Logic:
+            if (enemySpawnInterval > 0)
+            {
+                yield return new WaitForSeconds(enemySpawnInterval);
+            }
+        }
+
+        isSpawning = false;
     }
 
-    void SpawnEnemy()
+    GameObject[] GetEnemyList(int wave)
     {
-        timer = spawnTime;
-        if (Main.lvl == 1)
+        switch (wave)
         {
-            if (currentEnemy < wave1.Length)
-            {
-                spawning = true;
-                Instantiate(wave1[currentEnemy], transform.position, Quaternion.identity);
-                //this.enabled = false;
-            }
-            else
-            {
-                spawning = false;
-                return;
-            }
+            case 1: return wave1Enemies;
+            case 2: return wave2Enemies;
+            case 3: return wave3Enemies;
+            case 4: return wave4Enemies;
+            //case 5: return wave5Enemies;
+            default: return new GameObject[0];
         }
-        else if (Main.lvl == 2) 
-        {
-            if (currentEnemy < wave2.Length)
-            {
-                spawning = true;
-                Instantiate(wave2[currentEnemy], transform.position, Quaternion.identity);
-                //this.enabled = false;
-            }
-            else
-            {
-                spawning = false;
-                return;
-            }
-        }
-        else if (Main.lvl == 3)
-        {
-            
-            if (currentEnemy < wave3.Length)
-            {
-                spawning = true;
-                Instantiate(wave3[currentEnemy], transform.position, Quaternion.identity);
-                //this.enabled = false;
-            }
-            else
-            {
-                spawning = false;
-                return;
-            }
-        }
-        Main.PlusEnemyCounter();
-        currentEnemy++;
-        
     }
 }

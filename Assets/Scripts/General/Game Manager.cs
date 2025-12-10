@@ -9,8 +9,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gameOverPanel;
 
     [Header("References")]
-    [SerializeField] private EnemySpawner leftSpawner;
-    [SerializeField] private EnemySpawner rightSpawner;
+    [SerializeField] private EnemySpawner2 leftSpawner;
+    [SerializeField] private EnemySpawner2 rightSpawner;
     [SerializeField] private HP playerHP;
     [SerializeField] private HP houseHP;
     [SerializeField] private PlayerCoins playerCoinsScript;

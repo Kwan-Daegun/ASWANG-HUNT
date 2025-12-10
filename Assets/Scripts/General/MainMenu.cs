@@ -7,7 +7,7 @@ public class MainMenu : MonoBehaviour
 {
     public void OnClickPlay()
     {
-        SceneManager.LoadScene("LevelOne");
+        SceneManager.LoadScene("Shop");
     }
 
     public void OnClickExit()

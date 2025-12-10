@@ -18,8 +18,10 @@ public class HP : MonoBehaviour
 
     [Header("Stats")]
     [SerializeField] public float currentBarValue;
-    [SerializeField] private int bulletDamage = 10; // Defaulted to 10 so bullets actually hurt
     float maxBarValue = 100;
+
+    // Bullet damage logic should usually be on the Bullet, but we can keep it here for enemies
+    [SerializeField] private int bulletDamage = 10;
 
     private Vector3 originalBarScale;
 
@@ -48,19 +50,18 @@ public class HP : MonoBehaviour
     {
         if (number <= 0) return;
         currentBarValue = Mathf.Clamp(currentBarValue + number, 0, maxBarValue);
-
-        if (BarMask != null)
-        {
-            float fill = currentBarValue / maxBarValue;
-            BarMask.fillAmount = fill;
-        }
+        UpdateUI();
     }
 
     public void SubHealth(float number)
     {
         if (number <= 0) return;
         currentBarValue = Mathf.Clamp(currentBarValue - number, 0, maxBarValue);
+        UpdateUI();
+    }
 
+    void UpdateUI()
+    {
         if (BarMask != null)
         {
             float fill = currentBarValue / maxBarValue;
@@ -73,80 +74,90 @@ public class HP : MonoBehaviour
         // --- BAR FLIPPING LOGIC ---
         if (BarGO != null)
         {
+            // If the object flips (scale.x is negative), flip the bar back so it looks normal
+            float direction = (transform.localScale.x < 0) ? -1 : 1;
+
+            // We only modify the X scale, keeping the original size
+            Vector3 newScale = originalBarScale;
+            newScale.x = Mathf.Abs(originalBarScale.x) * (direction == -1 ? -1 : 1);
+            // Note: Depending on your hierarchy, you might just want newScale.x = Mathf.Abs... 
+            // usually bars shouldn't flip with the character, but this logic tries to correct it.
             if (transform.localScale.x < 0)
             {
-                Vector3 newScale = originalBarScale;
                 newScale.x = -Mathf.Abs(originalBarScale.x);
-                BarGO.transform.localScale = newScale;
             }
             else
             {
-                Vector3 newScale = originalBarScale;
                 newScale.x = Mathf.Abs(originalBarScale.x);
-                BarGO.transform.localScale = newScale;
             }
+            BarGO.transform.localScale = newScale;
         }
 
         // --- DEATH LOGIC ---
         if (currentBarValue <= 0)
         {
-            // 1. If it is an ENEMY
             if (type == "Enemy")
             {
+                // Check if it has the AI script to handle drops
                 EnemyAI enemyAI = GetComponent<EnemyAI>();
                 if (enemyAI != null)
                 {
                     enemyAI.Die();
-                    return; // Stop here so we don't trigger the player death logic
+                    return;
                 }
 
-                // Fallback if no AI script:
+                TikbalangMovement tikbalang = GetComponent<TikbalangMovement>();
+                if (tikbalang != null)
+                {
+                    tikbalang.Die();
+                    return;
+                }
+
+                // Santelmo check
+                SantelmoScript santelmo = GetComponent<SantelmoScript>();
+                if (santelmo != null)
+                {
+                    santelmo.ExtinguishSelf(); // Or a Die function
+                    return;
+                }
+
                 Destroy(gameObject);
             }
 
-            // 2. If it is the PLAYER or the HOUSE
             else if (type == "Player" || type == "House")
             {
-                // Trigger the Reset Game function from your Singleton
-                if (DayandNightData.Instance != null)
+                NightManager manager = FindObjectOfType<NightManager>();
+
+                if (manager != null)
                 {
-                    DayandNightData.Instance.ResetGame();
+                    manager.ShowGameOver();
                 }
                 else
                 {
-                    Debug.LogError("DayandNightData Instance not found! Can't reset game.");
+                    Debug.LogError("NightManager not found!");
+                    if (DayandNightData.Instance != null)
+                        DayandNightData.Instance.ResetGame();
                 }
 
-                // Destroy object (optional, since scene will reload anyway, but looks cleaner)
-                Destroy(gameObject);
-                if (BarGO != null) BarGO.SetActive(false);
+                gameObject.SetActive(false);
             }
         }
     }
 
-    // ---------------- FIRE SYSTEM START ---------------- //
-
+    // ---------------- FIRE SYSTEM ---------------- //
     public void ApplyBurn(int damagePerTick, float tickRate)
     {
         if (isBurning) return;
-
         isBurning = true;
         burnCoroutine = StartCoroutine(BurnProcess(damagePerTick, tickRate));
-
-        Debug.Log(gameObject.name + " CAUGHT FIRE! Find Holy Water!");
-
         if (fireParticleEffect != null) fireParticleEffect.SetActive(true);
     }
 
     public void ExtinguishFire()
     {
         if (!isBurning) return;
-
         isBurning = false;
         if (burnCoroutine != null) StopCoroutine(burnCoroutine);
-
-        Debug.Log(gameObject.name + " was cleansed with Holy Water!");
-
         if (fireParticleEffect != null) fireParticleEffect.SetActive(false);
     }
 
@@ -155,63 +166,32 @@ public class HP : MonoBehaviour
         while (isBurning)
         {
             yield return new WaitForSeconds(rate);
-
             SubHealth(damage);
-            Debug.Log(gameObject.name + " took burn damage...");
-
             if (currentBarValue <= 0) isBurning = false;
         }
     }
-    // ---------------- FIRE SYSTEM END ---------------- //
 
+    // ---------------- COLLISIONS ---------------- //
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // --- HOLY WATER CHECK ---
+        // 1. Holy Water (Cure Fire)
         if (collision.CompareTag("HolyWater"))
         {
             ExtinguishFire();
         }
 
-        // --- DAMAGE LOGIC ---
-        if (type == "House")
-        {
-            if (collision.CompareTag("Enemy"))
-            {
-                SubHealth(10);
-            }
-        }
-
+        // 2. Bullets hitting Enemy
+        // (We keep this here so your shooting still works)
         if (type == "Enemy")
         {
             if (collision.CompareTag("Bullet"))
             {
                 SubHealth(bulletDamage);
+                // Destroy bullet so it doesn't go through enemies
+                Destroy(collision.gameObject);
             }
         }
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (type == "Player")
-        {
-            if (collision.collider.CompareTag("Enemy"))
-            {
-                SubHealth(5);
-            }
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (type == "Player")
-        {
-            if (collision.collider.CompareTag("Enemy"))
-            {
-                SubHealth(1);
-            }
-        }
-    }
-
 
 }

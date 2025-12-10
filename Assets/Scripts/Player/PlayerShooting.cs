@@ -6,13 +6,20 @@ public class PlayerShooting : MonoBehaviour
     public Transform firePoint;
     public float bulletSpeed = 10f;
 
-    public int maxAmmo = 10;
+    public int maxAmmo = 20;
     private int currentAmmo;
 
     void Start()
     {
-        currentAmmo = Mathf.Clamp(GlobalData.Ammo, 0, maxAmmo);
+        /*currentAmmo = Mathf.Clamp(GlobalData.Ammo, 0, maxAmmo);
+        UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);*/
+        // IMPORTANT: Load ammo from GlobalData
+        // If GlobalData.Ammo is 0, this will be 0. If we bought 10, this should be 10.
+        currentAmmo = GlobalData.Ammo;
+
+        // Update the UI
         UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
+
     }
 
     void Update()

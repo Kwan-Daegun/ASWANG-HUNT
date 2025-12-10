@@ -4,35 +4,31 @@ using UnityEngine;
 
 public class TikbalangMovement : MonoBehaviour
 {
-    [SerializeField] private float speed = 2f;
-    [SerializeField] private int enemyDmg;
+    [Header("Tikbalang Stats")]
+    public float moveSpeed = 3f;
+    public float jumpForce = 8f;   // How high it jumps
+    public float stompForce = 12f; // Higher jump for attacking
+    public int stompDamage = 20;   // Heavy damage
 
-    private Vector2 target;
-    private Rigidbody2D rb;
-    //private HP house;
-    
+    [Header("AI Settings")]
+    public float attackRange = 2.5f; // Distance to start stomping
+    public float jumpInterval = 2f;  // Time between jumps
 
     [Header("Item Drop Settings")]
     public GameObject coinPrefab;
     public GameObject ammoPrefab;
-    [Range(0f, 100f)] public float coinDropChance = 100f;
-    [Range(0f, 100f)] public float ammoDropChance = 100f;
+    [Range(0f, 100f)] public float coinDropChance = 80f; // Higher chance for harder enemy
+    [Range(0f, 100f)] public float ammoDropChance = 50f;
 
-    //NEW
-    public float jumpForce = 7f;
-    public float cycleDuration = 2f;
-
-    private enum EnemyState { Walking, Jumping }
-    private EnemyState currentState = EnemyState.Walking;
-    private float stateTimer = 0f;
+    private Vector2 target;
+    private Rigidbody2D rb;
+    private float jumpTimer;
+    private bool isGrounded;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        //house = GameObject.Find("House").GetComponent<HP>();
-
-        //NEW
-        stateTimer = cycleDuration;
+        jumpTimer = jumpInterval;
     }
 
     public void SetTarget(Vector2 targetPos)
@@ -42,87 +38,84 @@ public class TikbalangMovement : MonoBehaviour
 
     void Update()
     {
-        Vector2 direction = ((Vector2)transform.position - target).x > 0 ? Vector2.left : Vector2.right;
-        rb.velocity = new Vector2(direction.x * speed, rb.velocity.y);
+        jumpTimer -= Time.deltaTime;
 
-        //NEW
-        stateTimer -= Time.deltaTime;
-        if (stateTimer <= 0)
+        // Check distance to house/target
+        float distanceToTarget = Vector2.Distance(transform.position, target);
+
+        // Only do AI if we are on the ground (ready to jump)
+        if (isGrounded && jumpTimer <= 0)
         {
-            stateTimer = cycleDuration;
-
-            if (currentState == EnemyState.Walking)
+            if (distanceToTarget <= attackRange)
             {
-                currentState = EnemyState.Jumping;
+                // CLOSE RANGE: STOMP ATTACK (Jump straight up)
+                PerformStomp();
             }
             else
             {
-                currentState = EnemyState.Walking;
+                // FAR RANGE: JUMP TOWARDS TARGET
+                PerformMoveJump();
             }
-        }
-        if (currentState == EnemyState.Walking)
-        {
-            HandleWalking();
-        }
-        else if (currentState == EnemyState.Jumping)
-        {
-            HandleJumping();
-        }
 
+            // Reset timer
+            jumpTimer = jumpInterval;
+            isGrounded = false; // We just jumped
+        }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void PerformMoveJump()
     {
-        if (other.CompareTag("House"))
+        // Calculate direction (-1 for left, 1 for right)
+        float direction = (target.x < transform.position.x) ? -1f : 1f;
+
+        // Face that direction
+        transform.localScale = new Vector3(direction > 0 ? -1 : 1, 1, 1); // Adjust based on your sprite
+
+        // Jump Forward (Up + Sideways)
+        rb.velocity = new Vector2(direction * moveSpeed, jumpForce);
+    }
+
+    void PerformStomp()
+    {
+        // Zero out horizontal speed to jump straight up
+        rb.velocity = new Vector2(0, stompForce);
+        Debug.Log("Tikbalang performs HIGH JUMP STOMP!");
+    }
+
+    // --- COLLISION / LANDING LOGIC ---
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Check if we landed on something solid (Ground, House, Player)
+        if (collision.contacts[0].normal.y > 0.5f)
         {
-            Debug.Log("Enemy reached the house!");
-            Destroy(gameObject);
+            isGrounded = true;
+            rb.velocity = Vector2.zero; // Stop sliding
+        }
+
+        // ATTACK LOGIC: If we land on House or Player, deal damage
+        if (collision.gameObject.CompareTag("House") || collision.gameObject.CompareTag("Player"))
+        {
+            HP hpScript = collision.gameObject.GetComponent<HP>();
+            if (hpScript != null)
+            {
+                hpScript.SubHealth(stompDamage);
+                Debug.Log("Tikbalang STOMPED target for " + stompDamage);
+            }
         }
     }
 
     public void Die()
     {
-        Debug.Log("Enemy died — dropping items...");
         TryDropItems();
         Destroy(gameObject);
     }
 
     void TryDropItems()
     {
-        bool dropped = false;
-
         if (coinPrefab != null && Random.Range(0f, 100f) < coinDropChance)
-        {
             Instantiate(coinPrefab, transform.position, Quaternion.identity);
-            Debug.Log("Dropped coin!");
-            dropped = true;
-        }
 
         if (ammoPrefab != null && Random.Range(0f, 100f) < ammoDropChance)
-        {
             Instantiate(ammoPrefab, transform.position, Quaternion.identity);
-            Debug.Log("Dropped ammo!");
-            dropped = true;
-        }
-
-        if (!dropped)
-        {
-            Debug.Log("No items dropped this time.");
-        }
-    }
-
-    void HandleWalking()
-    {
-        Vector2 direction = ((Vector2)transform.position - target).x > 0 ? Vector2.left : Vector2.right;
-
-        rb.velocity = new Vector2(direction.x * speed, rb.velocity.y);
-    }
-
-    //NEW
-    void HandleJumping()
-    {
-        rb.velocity = new Vector2(0f, jumpForce);
-
-        currentState = EnemyState.Walking;
     }
 }

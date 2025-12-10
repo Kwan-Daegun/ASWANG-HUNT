@@ -6,6 +6,10 @@ public class PlayerCoins : MonoBehaviour
 
     void Start()
     {
+        // IMPORTANT: Load coins from GlobalData
+        coins = GlobalData.Coins;
+
+        // Update the UI
         UIManager.Instance.UpdateCoins(coins);
     }
 

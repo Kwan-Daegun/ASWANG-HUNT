@@ -250,8 +250,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5bb1e4ce257b84c958aca94825c747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
-  enemyDmg: 5
+  speed: 1.5
+  enemyDmg: 10
+  attackCooldown: 1.5
   coinPrefab: {fileID: 7752164104856059213, guid: 0b7b1a77da7ddba4a854b67b92871584, type: 3}
   ammoPrefab: {fileID: 5403641417705815807, guid: f988eebf47d59c04885a01a2887c4fea, type: 3}
   coinDropChance: 100
@@ -274,6 +275,8 @@ MonoBehaviour:
   BarMask: {fileID: 1530630738865390980}
   currentBarValue: 100
   bulletDamage: 15
+  isBurning: 0
+  fireParticleEffect: {fileID: 0}
 --- !u!114 &913248786716624364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,14 +289,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 143791f9459595d48948413b307355e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
-  enemyDmg: 0
-  coinPrefab: {fileID: 0}
-  ammoPrefab: {fileID: 0}
+  moveSpeed: 3
+  jumpForce: 10
+  stompForce: 12
+  stompDamage: 20
+  attackRange: 2.5
+  jumpInterval: 2
+  coinPrefab: {fileID: 7752164104856059213, guid: 0b7b1a77da7ddba4a854b67b92871584, type: 3}
+  ammoPrefab: {fileID: 5403641417705815807, guid: f988eebf47d59c04885a01a2887c4fea, type: 3}
   coinDropChance: 100
   ammoDropChance: 100
-  jumpForce: 7
-  cycleDuration: 2
 --- !u!1 &2844961019604532743
 GameObject:
   m_ObjectHideFlags: 0

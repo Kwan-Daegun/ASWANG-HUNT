@@ -98,6 +98,25 @@ public class DayandNightData : MonoBehaviour
         // SceneManager.LoadScene(winSceneName); // Uncomment if you have a win scene
     }
 
+    // --- NEW METHOD FOR "NEXT" BUTTON ---
+    public void SkipToNextNight()
+    {
+        // 1. Progress the day
+        currentDay++;
+        Debug.Log("Skipping Shop! Proceeding to Night " + currentDay);
+
+        // 2. Check if the game is finished (Win)
+        if (currentDay > maxDay)
+        {
+            FinishGame();
+        }
+        else
+        {
+            // 3. Immediately start the next night
+            StartNight();
+        }
+    }
+
     // --- GAME OVER LOGIC ---
 
     // Call this if the player or house dies

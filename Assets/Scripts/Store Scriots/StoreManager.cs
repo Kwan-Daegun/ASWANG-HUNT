@@ -19,8 +19,8 @@ public class StoreManager : MonoBehaviour
     [Header("Prices")]
     public int ammoPrice = 10;
     public int healingPrice = 20;   // Suggestion
-    public int holyWaterPrice = 30; // Suggestion
-    public int buffPrice = 50;      // Suggestion
+    public int holyWaterPrice = 20; // Suggestion
+    public int buffPrice = 30;      // Suggestion
 
     private void Start()
     {
@@ -156,7 +156,18 @@ public class StoreManager : MonoBehaviour
 
     public void ContinueToGame()
     {
-        SaveCurrentStats();
-        DayandNightData.Instance.StartNight(); // Use the DayandNightData logic
+        Time.timeScale = 1f; // Unpause time
+
+        // 1. SAVE THE DATA
+        GlobalData.PlayerHealth = playerHP.currentBarValue;
+        GlobalData.HouseHealth = houseHP.currentBarValue;
+        GlobalData.Coins = playerCoinsScript.coins;
+        GlobalData.Ammo = playerShooting.GetCurrentAmmo();
+
+        if (playerThrowing != null)
+            GlobalData.HolyWaterAmmo = playerThrowing.holyWaterAmmo;
+
+        // 2. NOW SWITCH SCENES
+        DayandNightData.Instance.StartNight();
     }
 }

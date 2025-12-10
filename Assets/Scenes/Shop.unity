@@ -204,7 +204,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 63650754}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1640843487}
+        m_TargetAssemblyTypeName: StoreManager, Assembly-CSharp
+        m_MethodName: BuyAmmo
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &63650754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1017,7 +1029,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &443665879
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1184,9 +1196,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 941390837}
-        m_TargetAssemblyTypeName: DayandNightData, Assembly-CSharp
-        m_MethodName: StartNight
+      - m_Target: {fileID: 1640843487}
+        m_TargetAssemblyTypeName: StoreManager, Assembly-CSharp
+        m_MethodName: ContinueToGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1446,7 +1458,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.13189746, g: 0.19427425, b: 0.49056602, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -2426,7 +2438,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 947589992}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1640843487}
+        m_TargetAssemblyTypeName: StoreManager, Assembly-CSharp
+        m_MethodName: BuyHolyWater
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &947589992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2498,6 +2522,17 @@ Transform:
   - {fileID: 282611732}
   m_Father: {fileID: 2036098041}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1010428251 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6647527916063767620, guid: 4041cd0fa33bb7c44a54d6a483a8e25f, type: 3}
+  m_PrefabInstance: {fileID: 1257828166}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47a67848be61cd34a8ed2abe8b74bb1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1010428252 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 435885947341297318, guid: 4041cd0fa33bb7c44a54d6a483a8e25f, type: 3}
@@ -3324,7 +3359,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1503071402}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1640843487}
+        m_TargetAssemblyTypeName: StoreManager, Assembly-CSharp
+        m_MethodName: BuyHealing
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1503071402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3743,11 +3790,11 @@ MonoBehaviour:
   houseHP: {fileID: 742272343}
   playerCoinsScript: {fileID: 1010428252}
   playerShooting: {fileID: 1010428254}
-  playerThrowing: {fileID: 0}
+  playerThrowing: {fileID: 1010428251}
   ammoButton: {fileID: 63650751}
   healingButton: {fileID: 1503071399}
   holyWaterButton: {fileID: 947589989}
-  buffButton: {fileID: 0}
+  buffButton: {fileID: 1643831900}
   ammoPrice: 10
   healingPrice: 20
   holyWaterPrice: 30
@@ -3849,7 +3896,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1643831903}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1640843487}
+        m_TargetAssemblyTypeName: StoreManager, Assembly-CSharp
+        m_MethodName: BuyBuff
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1643831903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4809,6 +4868,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 742272345}
+        m_TargetAssemblyTypeName: Store, Assembly-CSharp
+        m_MethodName: back
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1727407679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5734,7 +5805,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 595214637}
+      - m_Target: {fileID: 443665878}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6

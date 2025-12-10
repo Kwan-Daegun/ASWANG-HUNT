@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5bb1e4ce257b84c958aca94825c747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 2.5
   enemyDmg: 5
   coinPrefab: {fileID: 7752164104856059213, guid: 0b7b1a77da7ddba4a854b67b92871584, type: 3}
   ammoPrefab: {fileID: 5403641417705815807, guid: f988eebf47d59c04885a01a2887c4fea, type: 3}
@@ -273,6 +273,8 @@ MonoBehaviour:
   BarMask: {fileID: 1530630738865390980}
   currentBarValue: 100
   bulletDamage: 25
+  isBurning: 0
+  fireParticleEffect: {fileID: 0}
 --- !u!1 &2844961019604532743
 GameObject:
   m_ObjectHideFlags: 0

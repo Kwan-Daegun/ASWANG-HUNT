@@ -14,8 +14,8 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private GameObject[] wave1Enemies;
     [SerializeField] private GameObject[] wave2Enemies;
     [SerializeField] private GameObject[] wave3Enemies;
-    [SerializeField] private GameObject[] wave4Enemies;
-    [SerializeField] private GameObject[] wave5Enemies;
+    //[SerializeField] private GameObject[] wave4Enemies;
+    //[SerializeField] private GameObject[] wave5Enemies;
 
     [Header("Timing")]
     [Tooltip("Set to 0 to spawn all instantly. Set to 0.2 for fast sequence.")]
@@ -77,8 +77,8 @@ public class EnemySpawner : MonoBehaviour
             case 1: return wave1Enemies;
             case 2: return wave2Enemies;
             case 3: return wave3Enemies;
-            case 4: return wave4Enemies;
-            case 5: return wave5Enemies;
+            //case 4: return wave4Enemies;
+            //case 5: return wave5Enemies;
             default: return new GameObject[0];
         }
     }
