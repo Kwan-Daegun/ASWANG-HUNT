@@ -812,6 +812,8 @@ MonoBehaviour:
   BarMask: {fileID: 529857701}
   currentBarValue: 100
   bulletDamage: 0
+  isBurning: 0
+  fireParticleEffect: {fileID: 0}
 --- !u!114 &263181215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1868,6 +1870,8 @@ MonoBehaviour:
   BarMask: {fileID: 0}
   currentBarValue: 100
   bulletDamage: 0
+  isBurning: 0
+  fireParticleEffect: {fileID: 0}
 --- !u!1 &827834627
 GameObject:
   m_ObjectHideFlags: 0
@@ -2115,8 +2119,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 629b2dd60b46c10498f8d22dbfafe62d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ammoText: {fileID: 0}
-  coinText: {fileID: 0}
+  ammoText: {fileID: 1038067537}
+  coinText: {fileID: 240863814}
 --- !u!4 &892035895
 Transform:
   m_ObjectHideFlags: 0
@@ -2957,6 +2961,7 @@ MonoBehaviour:
   playerHP: {fileID: 263181214}
   houseHP: {fileID: 742272343}
   playerCoinsScript: {fileID: 263181215}
+  playerShooting: {fileID: 263181213}
 --- !u!4 &1640843488
 Transform:
   m_ObjectHideFlags: 0
@@ -3985,10 +3990,10 @@ RectTransform:
   - {fileID: 1750922352}
   m_Father: {fileID: 595214638}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 157, y: -80}
-  m_SizeDelta: {x: 217.86, y: 72}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -207, y: -80}
+  m_SizeDelta: {x: 217.8601, y: 72}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1862743042
 MonoBehaviour:

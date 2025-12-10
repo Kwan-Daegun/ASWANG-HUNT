@@ -78,6 +78,7 @@ public class GameManager : MonoBehaviour
 
     public void OnNightComplete()
     {
+        winPanel.SetActive(true);
         StartCoroutine(ShowNightEndSequence());
     }
 
@@ -119,7 +120,7 @@ public class GameManager : MonoBehaviour
     public void GoToStore()
     {
         SaveCurrentStats();
-        SceneManager.LoadScene("StoreScene");
+        SceneManager.LoadScene("Shop");
     }
 
     public void Home()
@@ -144,4 +145,8 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene("LevelOne");
     }
+
+
+    
+    
 }
