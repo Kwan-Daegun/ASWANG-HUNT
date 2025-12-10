@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private HP houseHP;
     [SerializeField] private PlayerCoins playerCoinsScript;
     [SerializeField] private PlayerShooting playerShooting;
+    [SerializeField] private GameObject pausePanel;
+    private bool isPaused = false;
 
     private int currentWave = 0;
     private bool isWaveInProgress = false;
@@ -148,5 +150,34 @@ public class GameManager : MonoBehaviour
         Main.lvl = 0;
         Time.timeScale = 1f;
         SceneManager.LoadScene("LevelOne");
+    }
+    public void TogglePause()
+    {
+        if (isPaused)
+            ResumeGame();
+        else
+            PauseGame();
+    }
+
+    public void PauseGame()
+    {
+        isPaused = true;
+        pausePanel.SetActive(true);
+
+        if (playerShooting != null)
+            playerShooting.enabled = false;
+
+        Time.timeScale = 0f;
+    }
+
+    public void ResumeGame()
+    {
+        isPaused = false;
+        pausePanel.SetActive(false);
+
+        if (playerShooting != null)
+            playerShooting.enabled = true;
+
+        Time.timeScale = 1f;
     }
 }
