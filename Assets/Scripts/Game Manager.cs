@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
         InitializeUI();
         Time.timeScale = 1f;
 
-        // Load persistent values
         playerHP.currentBarValue = GlobalData.PlayerHealth;
         houseHP.currentBarValue = GlobalData.HouseHealth;
 
@@ -56,7 +55,6 @@ public class GameManager : MonoBehaviour
     private void OnWaveCleared()
     {
         isWaveInProgress = false;
-        Debug.Log($"Wave {currentWave} Cleared!");
 
         if (currentWave < 5)
             Invoke(nameof(StartNextWave), 5f);
@@ -72,13 +70,16 @@ public class GameManager : MonoBehaviour
         isWaveInProgress = true;
         leftSpawner?.StartWave(currentWave);
         rightSpawner?.StartWave(currentWave);
-
-        Debug.Log($"Starting Wave {currentWave}");
     }
 
     public void OnNightComplete()
     {
         winPanel.SetActive(true);
+
+        if (playerShooting != null)
+            playerShooting.enabled = false;
+
+        Time.timeScale = 0f;
         StartCoroutine(ShowNightEndSequence());
     }
 
@@ -103,6 +104,9 @@ public class GameManager : MonoBehaviour
             isGameOver = true;
             Time.timeScale = 0f;
             gameOverPanel?.SetActive(true);
+
+            if (playerShooting != null)
+                playerShooting.enabled = false;
         }
     }
 
@@ -145,8 +149,4 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene("LevelOne");
     }
-
-
-    
-    
 }
