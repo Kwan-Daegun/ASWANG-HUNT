@@ -1,8 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using TMPro;
+using System.Collections;
 public class StoreManager : MonoBehaviour
 {
+    [Header("UI Announcement")]
+    [SerializeField] private TMP_Text announcementText;
+    [SerializeField] private float announcementDuration = 4f;
     [Header("Player References")]
     [SerializeField] private HP playerHP;
     [SerializeField] private HP houseHP;
@@ -45,6 +49,7 @@ public class StoreManager : MonoBehaviour
 
         // --- 3. Shop Locking Logic ---
         SetupShopForDay();
+        ShowAnnouncement("Shop", announcementDuration);
     }
 
     private void SetupShopForDay()
@@ -170,4 +175,21 @@ public class StoreManager : MonoBehaviour
         // 2. NOW SWITCH SCENES
         DayandNightData.Instance.StartNight();
     }
+    private void ShowAnnouncement(string message, float duration)
+{
+    if (announcementText == null) return;
+
+    StopAllCoroutines();
+    StartCoroutine(ShowAnnouncementRoutine(message, duration));
+}
+
+private IEnumerator ShowAnnouncementRoutine(string message, float duration)
+{
+    announcementText.text = message;
+    announcementText.gameObject.SetActive(true);
+
+    yield return new WaitForSeconds(duration);
+
+    announcementText.gameObject.SetActive(false);
+}
 }

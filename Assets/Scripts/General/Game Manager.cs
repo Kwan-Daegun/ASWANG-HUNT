@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-
+using TMPro;
 public class GameManager : MonoBehaviour
 {
+    [Header("UI Text")]
+    [SerializeField] private TMP_Text announcementText;
     [Header("UI Panels")]
     [SerializeField] private GameObject winPanel;
     [SerializeField] private GameObject gameOverPanel;
@@ -68,6 +70,8 @@ public class GameManager : MonoBehaviour
     {
         currentWave++;
         Main.lvl = currentWave;
+
+        ShowAnnouncement("Wave " + currentWave);
 
         isWaveInProgress = true;
         leftSpawner?.StartWave(currentWave);
@@ -179,5 +183,22 @@ public class GameManager : MonoBehaviour
             playerShooting.enabled = true;
 
         Time.timeScale = 1f;
+    }
+    public void ShowAnnouncement(string message, float duration = 2f)
+    {
+        StopAllCoroutines();
+        StartCoroutine(ShowAnnouncementRoutine(message, duration));
+    }
+
+    private IEnumerator ShowAnnouncementRoutine(string message, float duration)
+    {
+        if (announcementText == null) yield break;
+
+        announcementText.text = message;
+        announcementText.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(duration);
+
+        announcementText.gameObject.SetActive(false);
     }
 }
