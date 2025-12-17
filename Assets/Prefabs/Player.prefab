@@ -324,7 +324,7 @@ Transform:
   m_GameObject: {fileID: 7987373571828529697}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.514, y: 0.085, z: 0}
+  m_LocalPosition: {x: 0.236, y: 0.085, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -416,8 +416,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_Sprite: {fileID: 7482667652216324306, guid: 9c8ebe976766ef34a83c7c13b3a50794, type: 3}
-  m_Color: {r: 0.1603772, g: 0.47272107, b: 1, a: 1}
+  m_Sprite: {fileID: 792905228, guid: 43681a5c96a9f834dbf1e62c925ab58f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -463,7 +463,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 2.1333332, y: 2.1333332}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -533,7 +533,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 1700955018599444622, guid: 06f30b41940e2fb4db9edcae8c22f2c7, type: 3}
   firePoint: {fileID: 3388991086050801225}
   bulletSpeed: 10
-  maxAmmo: 10
+  maxAmmo: 30
 --- !u!114 &8665266098292420289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,16 +580,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackOrigin: {fileID: 4789077694771595634}
-  attackRadius: 1
+  attackRadius: 2
   enemyMask:
     serializedVersion: 2
     m_Bits: 128
   baseDamage: 25
   cooldownTime: 0.5
-  slashPrefab: {fileID: 4942314322004593798, guid: 0637840cf64bb91469dfffce4ebfd3c5, type: 3}
-  effectDuration: 0.15
+  slashSprites:
+  - {fileID: 21300000, guid: 68bf387d58315124faed102ec0331536, type: 3}
+  - {fileID: 21300000, guid: b4156b7b73a6e5e49a5429b4c9c75fd1, type: 3}
+  - {fileID: 21300000, guid: 93edb878bfef51846a199dbd0dc7c4e3, type: 3}
+  - {fileID: 21300000, guid: 459575f2ab1ad7d4f9726d3612dadfee, type: 3}
+  - {fileID: 21300000, guid: 5dce2ca1ad51ee147a34ff5bc06d6344, type: 3}
+  - {fileID: 21300000, guid: 8790b18f9d2cb1044a76bb2d4cb83d78, type: 3}
+  frameSpeed: 0.04
+  slashOffset: {x: 0.37, y: 0.09, z: 0}
+  sortOrder: 10
   attackSound: {fileID: 0}
-  animator: {fileID: 0}
 --- !u!114 &6647527916063767620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -619,9 +626,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d053e797a9bf25442acefcaa65fed87d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleSprites: []
+  idleSprites:
+  - {fileID: 792905228, guid: 43681a5c96a9f834dbf1e62c925ab58f, type: 3}
+  - {fileID: 1745982768, guid: 43681a5c96a9f834dbf1e62c925ab58f, type: 3}
+  - {fileID: -1711209481, guid: 43681a5c96a9f834dbf1e62c925ab58f, type: 3}
+  - {fileID: 630142659, guid: 43681a5c96a9f834dbf1e62c925ab58f, type: 3}
   walkSprites: []
-  shootSprites: []
+  shootSprites:
+  - {fileID: 1994796647, guid: 38e6123c8019e3448a139a99da73361b, type: 3}
+  - {fileID: 1605085923, guid: 38e6123c8019e3448a139a99da73361b, type: 3}
+  - {fileID: 941706566, guid: 38e6123c8019e3448a139a99da73361b, type: 3}
+  - {fileID: -1655647020, guid: 38e6123c8019e3448a139a99da73361b, type: 3}
+  - {fileID: 200179266, guid: 38e6123c8019e3448a139a99da73361b, type: 3}
   animationSpeed: 0.12
   shootAnimSpeed: 0.06
 --- !u!1 &8569545615463580046

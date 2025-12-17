@@ -207,10 +207,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   enemyDmg: 5
+  attackCooldown: 1.5
   coinPrefab: {fileID: 7752164104856059213, guid: 0b7b1a77da7ddba4a854b67b92871584, type: 3}
   ammoPrefab: {fileID: 5403641417705815807, guid: f988eebf47d59c04885a01a2887c4fea, type: 3}
-  coinDropChance: 100
-  ammoDropChance: 100
+  coinDropChance: 40
+  ammoDropChance: 8
+  slashSprites:
+  - {fileID: 21300000, guid: 1eed433c7a58d54478b84afe8656d770, type: 3}
+  - {fileID: 21300000, guid: b1ad6899ba634d34b8229ea600b36227, type: 3}
+  - {fileID: 21300000, guid: 91488fbfbcbaab54192c790dde203024, type: 3}
+  - {fileID: 21300000, guid: 93b90c26cd9372a458a3f1674281b4f5, type: 3}
+  - {fileID: 21300000, guid: 41ea90b1ea70ad34a9d10b405c5fb440, type: 3}
+  - {fileID: 21300000, guid: 4a8eb9a3acd4dc84dab9ea0f14d58c39, type: 3}
+  frameSpeed: 0.04
+  slashOffset: {x: 0.37, y: 0, z: 0}
+  sortOrder: 10
 --- !u!114 &8148493334391615569
 MonoBehaviour:
   m_ObjectHideFlags: 0

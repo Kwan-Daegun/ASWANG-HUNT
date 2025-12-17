@@ -25,12 +25,9 @@ public class TikbalangMovement : MonoBehaviour
     private float jumpTimer;
     private bool isGrounded;
 
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         jumpTimer = jumpInterval;
     }
 
@@ -88,19 +85,14 @@ public class TikbalangMovement : MonoBehaviour
     // --- COLLISION / LANDING LOGIC ---
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // --- LANDING CHECK ---
-        if (collision.contactCount > 0)
+        // Check if we landed on something solid (Ground, House, Player)
+        if (collision.contacts[0].normal.y > 0.5f)
         {
-            ContactPoint2D contact = collision.contacts[0];
-
-            if (contact.normal.y > 0.5f)
-            {
-                isGrounded = true;
-                rb.velocity = Vector2.zero;
-            }
+            isGrounded = true;
+            rb.velocity = Vector2.zero; // Stop sliding
         }
 
-        // --- DAMAGE CHECK ---
+        // ATTACK LOGIC: If we land on House or Player, deal damage
         if (collision.gameObject.CompareTag("House") || collision.gameObject.CompareTag("Player"))
         {
             HP hpScript = collision.gameObject.GetComponent<HP>();

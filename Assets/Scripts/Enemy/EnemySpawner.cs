@@ -4,28 +4,32 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Configuration")]
-    // Since this script is on a specific object (Left OR Right), 
-    // we don't need a reference to the "other" side. 
-    // Just spawn at THIS object's position.
     [SerializeField] private Transform spawnPoint;
+    [SerializeField] private float enemySpawnInterval = 2f;
 
-    [Header("My Wave Lists")]
-    // PUT ONLY THE ENEMIES FOR THIS SPECIFIC SIDE HERE
-    [SerializeField] private GameObject[] wave1Enemies;
-    [SerializeField] private GameObject[] wave2Enemies;
-    [SerializeField] private GameObject[] wave3Enemies;
-    [SerializeField] private GameObject[] wave4Enemies;
-    [SerializeField] private GameObject[] wave5Enemies;
+    // --- NIGHT 1 ARRAYS ---
+    [Header("--- NIGHT 1 WAVES ---")]
+    [SerializeField] private GameObject[] Night1_Wave1;
+    [SerializeField] private GameObject[] Night1_Wave2;
+    [SerializeField] private GameObject[] Night1_Wave3;
 
-    [Header("Timing")]
-    [Tooltip("Set to 0 to spawn all instantly. Set to 0.2 for fast sequence.")]
-    [SerializeField] private float enemySpawnInterval = 0.5f;
+    // --- NIGHT 2 ARRAYS ---
+    [Header("--- NIGHT 2 WAVES ---")]
+    [SerializeField] private GameObject[] Night2_Wave1;
+    [SerializeField] private GameObject[] Night2_Wave2;
+    [SerializeField] private GameObject[] Night2_Wave3;
+    [SerializeField] private GameObject[] Night2_Wave4; // Extra wave for Night 2
+
+    // --- NIGHT 3 ARRAYS ---
+    [Header("--- NIGHT 3 WAVES ---")]
+    [SerializeField] private GameObject[] Night3_Wave1;
+    [SerializeField] private GameObject[] Night3_Wave2;
+    [SerializeField] private GameObject[] Night3_Wave3;
+    [SerializeField] private GameObject[] Night3_Wave4;
+    [SerializeField] private GameObject[] Night3_Wave5; // Hardest night!
 
     // Internal State
     public bool isSpawning = false;
-
-    // We don't need Update() anymore. 
-    // The GameManager will check if enemies are dead.
 
     public void StartWave(int waveIndex)
     {
@@ -37,30 +41,30 @@ public class EnemySpawner : MonoBehaviour
     {
         isSpawning = true;
 
+        // 1. Ask: "What day is it?" and "What wave is it?"
         GameObject[] enemiesToSpawn = GetEnemyList(waveIndex);
 
-        // If this side has no enemies for this wave, just finish immediately
         if (enemiesToSpawn.Length == 0)
         {
+            // No enemies configured for this wave? Done.
             isSpawning = false;
             yield break;
         }
 
+        // 2. Spawn them one by one
         for (int i = 0; i < enemiesToSpawn.Length; i++)
         {
             GameObject prefab = enemiesToSpawn[i];
 
             if (prefab != null)
             {
-                // Spawn at the Transform assigned in Inspector (Left or Right)
                 GameObject newEnemy = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
 
-                // Reset AI Target
+                // Reset AI Target to ensure they walk towards center
                 EnemyAI ai = newEnemy.GetComponent<EnemyAI>();
                 if (ai != null) ai.SetTarget(Vector2.zero);
             }
 
-            // Simultaneous Logic:
             if (enemySpawnInterval > 0)
             {
                 yield return new WaitForSeconds(enemySpawnInterval);
@@ -70,16 +74,53 @@ public class EnemySpawner : MonoBehaviour
         isSpawning = false;
     }
 
+    // This is the brain of the spawner
     GameObject[] GetEnemyList(int wave)
     {
-        switch (wave)
+        // Get the current day from your Global Data script
+        int currentDay = 1;
+        if (DayandNightData.Instance != null)
         {
-            case 1: return wave1Enemies;
-            case 2: return wave2Enemies;
-            case 3: return wave3Enemies;
-            case 4: return wave4Enemies;
-            case 5: return wave5Enemies;
-            default: return new GameObject[0];
+            currentDay = DayandNightData.Instance.currentDay;
         }
+
+        // --- NIGHT 1 LOGIC ---
+        if (currentDay == 1)
+        {
+            switch (wave)
+            {
+                case 1: return Night1_Wave1;
+                case 2: return Night1_Wave2;
+                case 3: return Night1_Wave3;
+                default: return new GameObject[0];
+            }
+        }
+        // --- NIGHT 2 LOGIC ---
+        else if (currentDay == 2)
+        {
+            switch (wave)
+            {
+                case 1: return Night2_Wave1;
+                case 2: return Night2_Wave2;
+                case 3: return Night2_Wave3;
+                case 4: return Night2_Wave4;
+                default: return new GameObject[0];
+            }
+        }
+        // --- NIGHT 3 LOGIC ---
+        else if (currentDay == 3)
+        {
+            switch (wave)
+            {
+                case 1: return Night3_Wave1;
+                case 2: return Night3_Wave2;
+                case 3: return Night3_Wave3;
+                case 4: return Night3_Wave4;
+                case 5: return Night3_Wave5;
+                default: return new GameObject[0];
+            }
+        }
+
+        return new GameObject[0];
     }
 }

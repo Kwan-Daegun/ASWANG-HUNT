@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 
 public class DayandNightData : MonoBehaviour
 {
@@ -15,16 +15,15 @@ public class DayandNightData : MonoBehaviour
 
     [Header("Scene Names")]
     [Tooltip("Type the exact name of your Day/Shop scene here")]
-    public string daySceneName = "Shop";
+    public string daySceneName = "ShopScene";
 
     [Tooltip("Type the exact names of your Night scenes here")]
     public string night1SceneName = "Night1";
     public string night2SceneName = "Night2";
     public string night3SceneName = "Night3";
     public string winSceneName = "WinScene"; // Optional: Scene after finishing Night 3
-    public 
 
-    void Awake()
+    private void Awake()
     {
         // SINGLETON PATTERN:
         // Check if an instance already exists
@@ -64,7 +63,6 @@ public class DayandNightData : MonoBehaviour
         {
             SceneManager.LoadScene(night3SceneName);
         }
-        SceneManager.sceneLoaded += OnNightLoaded;
     }
 
     // Call this when all enemies are killed
@@ -129,19 +127,6 @@ public class DayandNightData : MonoBehaviour
         currentDay = 1;
         SceneManager.LoadScene(daySceneName);
     }
-    private void OnNightLoaded(Scene scene, LoadSceneMode mode)
-{
-    // Remove listener so it doesn't run twice
-    SceneManager.sceneLoaded -= OnNightLoaded;
-
-    // Find GameManager inside the Night scene
-    GameManager gm = FindAnyObjectByType<GameManager>();
-
-    if (gm != null)
-    {
-        gm.ShowAnnouncement("Night " + currentDay, 2f);
-    }
-}
 
     // Update is called once per frame
     void Update()
