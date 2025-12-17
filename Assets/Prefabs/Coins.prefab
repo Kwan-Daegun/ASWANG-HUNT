@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -6678018221080205500}
   - component: {fileID: 8807345319461053164}
   - component: {fileID: 7398531618544811128}
+  - component: {fileID: -4922110392148459021}
   m_Layer: 0
   m_Name: Coins
   m_TagString: Untagged
@@ -77,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6052ee349ea6cf5469d5c66ef3c98a86, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -124,7 +125,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 2}
+    oldSize: {x: 4, y: 3}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -169,7 +170,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 2}
+    oldSize: {x: 4, y: 3}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -219,3 +220,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coinValue: 1
   rotationSpeed: 100
+--- !u!114 &-4922110392148459021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7752164104856059213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff181d873171be3438d5422d13275d78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frames:
+  - {fileID: 21300000, guid: 6052ee349ea6cf5469d5c66ef3c98a86, type: 3}
+  - {fileID: 21300000, guid: 385d67f3df2216840a59ca720f0e7a05, type: 3}
+  - {fileID: 21300000, guid: ff24e86d6a4eac243bacf3dcf9a8164a, type: 3}
+  - {fileID: 21300000, guid: b3103f709496f8e408e1476cc926036f, type: 3}
+  - {fileID: 21300000, guid: f1658a878c4ff9242ba15d2ebb9a8f88, type: 3}
+  - {fileID: 21300000, guid: d00d3f44d5b2a784ba4e1fdd9e426345, type: 3}
+  - {fileID: 21300000, guid: ee8a4bd551f29234ba2ca5a27b446104, type: 3}
+  animationSpeed: 0.1

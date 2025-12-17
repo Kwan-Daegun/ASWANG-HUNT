@@ -348,6 +348,7 @@ GameObject:
   - component: {fileID: 435885947341297318}
   - component: {fileID: 8833423263027644041}
   - component: {fileID: 6647527916063767620}
+  - component: {fileID: 8416625569864991257}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -365,7 +366,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.06, y: -3.48, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1489528956697598844}
@@ -606,6 +607,23 @@ MonoBehaviour:
   throwForce: 15
   holyWaterAmmo: 0
   throwCooldown: 2
+--- !u!114 &8416625569864991257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8563231215931075194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d053e797a9bf25442acefcaa65fed87d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleSprites: []
+  walkSprites: []
+  shootSprites: []
+  animationSpeed: 0.12
+  shootAnimSpeed: 0.06
 --- !u!1 &8569545615463580046
 GameObject:
   m_ObjectHideFlags: 0

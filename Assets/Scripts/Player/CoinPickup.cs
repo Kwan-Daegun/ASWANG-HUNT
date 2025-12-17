@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CoinPickup : MonoBehaviour
 {
-    public int coinValue = 3;         // How much the coin is worth
+    public int coinValue = 1;         // How much the coin is worth
     public float rotationSpeed = 100f; // Optional spin for visibility
 
     void Update()

@@ -15,7 +15,7 @@ public class DayandNightData : MonoBehaviour
 
     [Header("Scene Names")]
     [Tooltip("Type the exact name of your Day/Shop scene here")]
-    public string daySceneName = "ShopScene";
+    public string daySceneName = "Shop";
 
     [Tooltip("Type the exact names of your Night scenes here")]
     public string night1SceneName = "Night1";

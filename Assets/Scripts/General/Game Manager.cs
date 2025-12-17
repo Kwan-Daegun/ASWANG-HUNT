@@ -2,55 +2,72 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using TMPro;
+
 public class GameManager : MonoBehaviour
 {
-    [Header("UI Text")]
-    [SerializeField] private TMP_Text announcementText;
-    [Header("UI Panels")]
     [SerializeField] private GameObject winPanel;
     [SerializeField] private GameObject gameOverPanel;
-
-    [Header("References")]
-    [SerializeField] private EnemySpawner2 leftSpawner;
-    [SerializeField] private EnemySpawner2 rightSpawner;
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private TextMeshProUGUI announcementText;
+    [SerializeField] private EnemySpawner leftSpawner;
+    [SerializeField] private EnemySpawner rightSpawner;
     [SerializeField] private HP playerHP;
     [SerializeField] private HP houseHP;
     [SerializeField] private PlayerCoins playerCoinsScript;
     [SerializeField] private PlayerShooting playerShooting;
-    [SerializeField] private GameObject pausePanel;
-    private bool isPaused = false;
 
-    private int currentWave = 0;
-    private bool isWaveInProgress = false;
-    private bool isGameOver = false;
+    private bool isPaused;
+    private int currentWave;
+    private bool isWaveInProgress;
+    private bool isGameOver;
 
     private void Start()
     {
-        InitializeUI();
         Time.timeScale = 1f;
 
-        playerHP.currentBarValue = GlobalData.PlayerHealth;
-        houseHP.currentBarValue = GlobalData.HouseHealth;
+        if (winPanel) winPanel.SetActive(false);
+        if (gameOverPanel) gameOverPanel.SetActive(false);
+        if (pausePanel) pausePanel.SetActive(false);
+        if (announcementText) announcementText.gameObject.SetActive(false);
 
-        if (playerCoinsScript != null)
-            playerCoinsScript.coins = GlobalData.Coins;
-
-        if (playerShooting != null)
-            playerShooting.SetAmmo(GlobalData.Ammo);
+        if (playerHP) playerHP.currentBarValue = GlobalData.PlayerHealth;
+        if (houseHP) houseHP.currentBarValue = GlobalData.HouseHealth;
+        if (playerCoinsScript) playerCoinsScript.coins = GlobalData.Coins;
+        if (playerShooting) playerShooting.SetAmmo(GlobalData.Ammo);
 
         StartNextWave();
     }
 
     private void Update()
     {
-        CheckGameOver();
-        CheckWaveStatus();
+        if (!isGameOver)
+            CheckGameOver();
+
+        if (isWaveInProgress)
+            CheckWaveStatus();
+    }
+
+    public void ShowAnnouncement(string message, float duration)
+    {
+        if (!announcementText) return;
+        StopAllCoroutines();
+        StartCoroutine(AnnouncementRoutine(message, duration));
+    }
+
+    private IEnumerator AnnouncementRoutine(string message, float duration)
+    {
+        announcementText.gameObject.SetActive(true);
+        announcementText.text = message;
+        yield return new WaitForSecondsRealtime(duration);
+        if (announcementText)
+            announcementText.gameObject.SetActive(false);
     }
 
     private void CheckWaveStatus()
     {
-        if (!isWaveInProgress) return;
-        if (leftSpawner.isSpawning || rightSpawner.isSpawning) return;
+        if ((leftSpawner && leftSpawner.isSpawning) ||
+            (rightSpawner && rightSpawner.isSpawning))
+            return;
 
         if (GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
             OnWaveCleared();
@@ -70,62 +87,51 @@ public class GameManager : MonoBehaviour
     {
         currentWave++;
         Main.lvl = currentWave;
-
-        ShowAnnouncement("Wave " + currentWave);
-
         isWaveInProgress = true;
-        leftSpawner?.StartWave(currentWave);
-        rightSpawner?.StartWave(currentWave);
+
+        if (leftSpawner) leftSpawner.StartWave(currentWave);
+        if (rightSpawner) rightSpawner.StartWave(currentWave);
     }
 
     public void OnNightComplete()
     {
-        winPanel.SetActive(true);
-
-        if (playerShooting != null)
-            playerShooting.enabled = false;
-
+        if (winPanel) winPanel.SetActive(true);
+        if (playerShooting) playerShooting.enabled = false;
         Time.timeScale = 0f;
-        StartCoroutine(ShowNightEndSequence());
-    }
-
-    IEnumerator ShowNightEndSequence()
-    {
-        yield return new WaitForSeconds(2f);
-        Time.timeScale = 0f;
-    }
-
-    private void InitializeUI()
-    {
-        winPanel?.SetActive(false);
-        gameOverPanel?.SetActive(false);
+        DayandNightData.Instance?.CompleteNight();
     }
 
     private void CheckGameOver()
     {
-        if (isGameOver) return;
+        if (!playerHP || !houseHP) return;
 
         if (playerHP.currentBarValue <= 0 || houseHP.currentBarValue <= 0)
         {
             isGameOver = true;
             Time.timeScale = 0f;
-            gameOverPanel?.SetActive(true);
-
-            if (playerShooting != null)
-                playerShooting.enabled = false;
+            if (gameOverPanel) gameOverPanel.SetActive(true);
+            if (playerShooting) playerShooting.enabled = false;
+            DayandNightData.Instance?.ResetGame();
         }
     }
 
     private void SaveCurrentStats()
     {
-        GlobalData.PlayerHealth = playerHP.currentBarValue;
-        GlobalData.HouseHealth = houseHP.currentBarValue;
-        GlobalData.Coins = playerCoinsScript != null ? playerCoinsScript.coins : GlobalData.Coins;
-        GlobalData.Ammo = playerShooting != null ? playerShooting.GetCurrentAmmo() : GlobalData.Ammo;
+        if (playerHP) GlobalData.PlayerHealth = playerHP.currentBarValue;
+        if (houseHP) GlobalData.HouseHealth = houseHP.currentBarValue;
+        if (playerCoinsScript) GlobalData.Coins = playerCoinsScript.coins;
+        if (playerShooting) GlobalData.Ammo = playerShooting.GetCurrentAmmo();
     }
 
-    public void HealPlayer() => playerHP.AddHealth(10);
-    public void RepairHouse() => houseHP.AddHealth(10);
+    public void HealPlayer()
+    {
+        if (playerHP) playerHP.AddHealth(10);
+    }
+
+    public void RepairHouse()
+    {
+        if (houseHP) houseHP.AddHealth(10);
+    }
 
     public void GoToStore()
     {
@@ -140,7 +146,10 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("newMenu");
     }
 
-    public void ExitGame() => Application.Quit();
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
 
     public void RestartLevel()
     {
@@ -155,50 +164,26 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene("LevelOne");
     }
+
     public void TogglePause()
     {
-        if (isPaused)
-            ResumeGame();
-        else
-            PauseGame();
+        if (isPaused) ResumeGame();
+        else PauseGame();
     }
 
     public void PauseGame()
     {
         isPaused = true;
-        pausePanel.SetActive(true);
-
-        if (playerShooting != null)
-            playerShooting.enabled = false;
-
+        if (pausePanel) pausePanel.SetActive(true);
+        if (playerShooting) playerShooting.enabled = false;
         Time.timeScale = 0f;
     }
 
     public void ResumeGame()
     {
         isPaused = false;
-        pausePanel.SetActive(false);
-
-        if (playerShooting != null)
-            playerShooting.enabled = true;
-
+        if (pausePanel) pausePanel.SetActive(false);
+        if (playerShooting) playerShooting.enabled = true;
         Time.timeScale = 1f;
-    }
-    public void ShowAnnouncement(string message, float duration = 2f)
-    {
-        StopAllCoroutines();
-        StartCoroutine(ShowAnnouncementRoutine(message, duration));
-    }
-
-    private IEnumerator ShowAnnouncementRoutine(string message, float duration)
-    {
-        if (announcementText == null) yield break;
-
-        announcementText.text = message;
-        announcementText.gameObject.SetActive(true);
-
-        yield return new WaitForSeconds(duration);
-
-        announcementText.gameObject.SetActive(false);
     }
 }

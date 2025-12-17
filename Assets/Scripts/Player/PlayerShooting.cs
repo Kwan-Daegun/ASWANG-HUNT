@@ -1,25 +1,23 @@
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerAnimation))]
 public class PlayerShooting : MonoBehaviour
 {
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float bulletSpeed = 10f;
 
-    public int maxAmmo = 20;
+    public int maxAmmo = 10;
     private int currentAmmo;
+
+    private PlayerAnimation playerAnimation;
 
     void Start()
     {
-        /*currentAmmo = Mathf.Clamp(GlobalData.Ammo, 0, maxAmmo);
-        UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);*/
-        // IMPORTANT: Load ammo from GlobalData
-        // If GlobalData.Ammo is 0, this will be 0. If we bought 10, this should be 10.
-        currentAmmo = GlobalData.Ammo;
-
-        // Update the UI
+        playerAnimation = GetComponent<PlayerAnimation>();
+        currentAmmo = Mathf.Clamp(GlobalData.Ammo, 0, maxAmmo);
         UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
-
+        playerAnimation = GetComponent<PlayerAnimation>();
     }
 
     void Update()
@@ -36,16 +34,16 @@ public class PlayerShooting : MonoBehaviour
 
     void Shoot()
     {
-        if (bulletPrefab == null || firePoint == null) return;
-
-        if (currentAmmo <= 0)
-            return;
+        if (!bulletPrefab || !firePoint) return;
+        if (currentAmmo <= 0) return;
 
         currentAmmo--;
         UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
 
+        playerAnimation?.PlayShootAnimation();
+
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0;
+        mousePosition.z = 0f;
 
         Vector2 shootDirection = (mousePosition - firePoint.position).normalized;
         float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
@@ -57,7 +55,7 @@ public class PlayerShooting : MonoBehaviour
         );
 
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        if (rb != null)
+        if (rb)
             rb.velocity = shootDirection * bulletSpeed;
     }
 

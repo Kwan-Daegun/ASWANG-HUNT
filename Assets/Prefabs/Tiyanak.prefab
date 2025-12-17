@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.75}
+  m_AnchoredPosition: {x: 0, y: -0.595}
   m_SizeDelta: {x: 3, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &215451600888689650
@@ -87,9 +87,10 @@ GameObject:
   - component: {fileID: 2138828001334228575}
   - component: {fileID: 1798322117015674155}
   - component: {fileID: 4001953509545639295}
-  - component: {fileID: 7948625189925568605}
   - component: {fileID: -109748267570726917}
   - component: {fileID: 8148493334391615569}
+  - component: {fileID: 4969538835334619737}
+  - component: {fileID: 815198963627074686}
   m_Layer: 7
   m_Name: Tiyanak
   m_TagString: Enemy
@@ -107,7 +108,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4.86, y: -1.78, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 615040824976053527}
@@ -154,12 +155,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 5967f08f3a2e78f4f9fd9a484ba9b8e5, type: 3}
-  m_Color: {r: 1, g: 0.17924517, b: 0.17924517, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 2cd4b352f0943524d9fdef067724c4e3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 19.2, y: 10.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -192,8 +193,69 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!61 &7948625189925568605
-BoxCollider2D:
+--- !u!114 &-109748267570726917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2607998299721671849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa5bb1e4ce257b84c958aca94825c747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 2
+  enemyDmg: 5
+  coinPrefab: {fileID: 7752164104856059213, guid: 0b7b1a77da7ddba4a854b67b92871584, type: 3}
+  ammoPrefab: {fileID: 5403641417705815807, guid: f988eebf47d59c04885a01a2887c4fea, type: 3}
+  coinDropChance: 100
+  ammoDropChance: 100
+--- !u!114 &8148493334391615569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2607998299721671849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4503eee762ad3fc4db2904aa28fe360a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: Enemy
+  HPGO: {fileID: 3916174570667993115}
+  BarGO: {fileID: 1732148246231328636}
+  BarMask: {fileID: 1530630738865390980}
+  currentBarValue: 100
+  bulletDamage: 25
+  isBurning: 0
+  fireParticleEffect: {fileID: 0}
+--- !u!114 &4969538835334619737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2607998299721671849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdbf9096ccf06a64fad85f4a2f921ebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSprites:
+  - {fileID: 21300000, guid: 2cd4b352f0943524d9fdef067724c4e3, type: 3}
+  - {fileID: 21300000, guid: 33ab832fa3e727248957e4f00b8e1013, type: 3}
+  - {fileID: 21300000, guid: 51f21e1126236184ea1e22596b21d962, type: 3}
+  - {fileID: 21300000, guid: 9f7226284f99cae47be50584d3ee4d63, type: 3}
+  - {fileID: 21300000, guid: 82701cdfcae7b4648a4eea5f93b773cb, type: 3}
+  - {fileID: 21300000, guid: 565cd47014753c641a5379236539f946, type: 3}
+  - {fileID: 21300000, guid: cca9f1d42fef213409a7b51b274b8be6, type: 3}
+  - {fileID: 21300000, guid: 18729afdcc3db7a4da323d561fd9d6ec, type: 3}
+  animationSpeed: 0.1
+  rb: {fileID: 4001953509545639295}
+--- !u!70 &815198963627074686
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -224,57 +286,9 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
---- !u!114 &-109748267570726917
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2607998299721671849}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa5bb1e4ce257b84c958aca94825c747, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 2.5
-  enemyDmg: 5
-  coinPrefab: {fileID: 7752164104856059213, guid: 0b7b1a77da7ddba4a854b67b92871584, type: 3}
-  ammoPrefab: {fileID: 5403641417705815807, guid: f988eebf47d59c04885a01a2887c4fea, type: 3}
-  coinDropChance: 100
-  ammoDropChance: 100
---- !u!114 &8148493334391615569
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2607998299721671849}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4503eee762ad3fc4db2904aa28fe360a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: Enemy
-  HPGO: {fileID: 3916174570667993115}
-  BarGO: {fileID: 1732148246231328636}
-  BarMask: {fileID: 1530630738865390980}
-  currentBarValue: 100
-  bulletDamage: 25
-  isBurning: 0
-  fireParticleEffect: {fileID: 0}
+  m_Offset: {x: -0.022927523, y: -0.06448281}
+  m_Size: {x: 0.2722659, y: 0.70938706}
+  m_Direction: 0
 --- !u!1 &2844961019604532743
 GameObject:
   m_ObjectHideFlags: 0

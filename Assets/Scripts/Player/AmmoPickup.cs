@@ -2,21 +2,12 @@ using UnityEngine;
 
 public class AmmoPickup : MonoBehaviour
 {
-    [Header("Loot Settings")]
-    public int minAmmo = 2; // Minimum bullets to get
-    public int maxAmmo = 5; // Maximum bullets to get
-    public float rotationSpeed = 50f;
-
-    private int ammoAmount;
-
-    void Start()
-    {
-        // Randomize the amount when this object is created
-        ammoAmount = Random.Range(minAmmo, maxAmmo + 1);
-    }
+    public int ammoAmount = 5;        // How much ammo this pickup gives
+    public float rotationSpeed = 50f; // Optional spin for visibility
 
     void Update()
     {
+        // Optional: make the ammo spin for visibility
         transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime);
     }
 
@@ -28,16 +19,12 @@ public class AmmoPickup : MonoBehaviour
 
             if (playerShooting != null)
             {
-                // Check if player is already full
-                if (playerShooting.GetCurrentAmmo() >= playerShooting.GetMaxAmmo())
-                {
-                    Debug.Log("Ammo Full! Cannot pick up.");
-                    return; // Don't pick it up, leave it on ground for later
-                }
-
-                // Add the random amount
+                // Refill ammo
                 playerShooting.AddAmmo(ammoAmount);
-                Debug.Log("Picked up " + ammoAmount + " ammo!");
+                Debug.Log("Picked up ammo +" + ammoAmount);
+
+                //  Update the UI immediately
+                UIManager.Instance.UpdateAmmo(playerShooting.GetCurrentAmmo(), playerShooting.GetMaxAmmo());
 
                 Destroy(gameObject);
             }

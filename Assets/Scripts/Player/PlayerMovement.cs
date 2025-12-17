@@ -34,9 +34,9 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector2(moveInput * currentSpeed, rb.velocity.y);
 
         if (moveInput > 0)
-            transform.localScale = new Vector3(0.5f, 1, 1);
+            transform.localScale = new Vector3(1f, 1, 1);
         else if (moveInput < 0)
-            transform.localScale = new Vector3(-0.5f, 1, 1);
+            transform.localScale = new Vector3(-1f, 1, 1);
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
