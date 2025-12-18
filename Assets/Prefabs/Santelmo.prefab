@@ -256,7 +256,7 @@ GameObject:
   - component: {fileID: 3584274346681524598}
   - component: {fileID: 2235576670652290789}
   - component: {fileID: -7629951782367904864}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Santelmo
   m_TagString: Enemy
   m_Icon: {fileID: 0}

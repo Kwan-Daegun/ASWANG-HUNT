@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 8148493334391615569}
   - component: {fileID: 913248786716624364}
   - component: {fileID: 959362555594361181}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Tikbalang
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -258,6 +258,10 @@ MonoBehaviour:
   ammoPrefab: {fileID: 5403641417705815807, guid: f988eebf47d59c04885a01a2887c4fea, type: 3}
   coinDropChance: 60
   ammoDropChance: 30
+  slashSprites: []
+  frameSpeed: 0.04
+  slashOffset: {x: 0.5, y: 0, z: 0}
+  sortOrder: 10
 --- !u!114 &8148493334391615569
 MonoBehaviour:
   m_ObjectHideFlags: 0

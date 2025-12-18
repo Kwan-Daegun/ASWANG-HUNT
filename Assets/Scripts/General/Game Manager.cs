@@ -148,7 +148,7 @@ public class GameManager : MonoBehaviour
     {
         SaveCurrentStats();
         Time.timeScale = 1f;
-        SceneManager.LoadScene("newMenu");
+        SceneManager.LoadScene("NewMenu");
     }
 
     public void ExitGame() => Application.Quit();

@@ -96,7 +96,7 @@ public class DayandNightData : MonoBehaviour
     private void FinishGame()
     {
         Debug.Log("Game Finished! You survived all 3 nights.");
-        // SceneManager.LoadScene(winSceneName); // Uncomment if you have a win scene
+        SceneManager.LoadScene(winSceneName);
     }
 
     // --- NEW METHOD FOR "NEXT" BUTTON ---

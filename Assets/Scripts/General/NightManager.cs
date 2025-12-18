@@ -15,14 +15,64 @@ public class NightManager : MonoBehaviour
     [SerializeField] private HP playerHP;
     [SerializeField] private HP houseHP;
 
-    private void Start()
+    void Start()
+    {
+        // 1. Check if we should load data (Day 2, Day 3, etc.)
+        // If it's Day 1, we let the default values stay (Full HP, 0 Coins, Default Ammo)
+        if (DayandNightData.Instance != null && DayandNightData.Instance.currentDay > 1)
+        {
+            LoadSavedStats();
+        }
+
+        // 2. Update the UI immediately so the numbers are correct on screen
+        if (UIManager.Instance != null)
+        {
+            // Update Coin UI
+            if (playerCoins != null)
+                UIManager.Instance.UpdateCoins(playerCoins.coins);
+
+            // Update Ammo UI
+            if (playerShooting != null)
+                UIManager.Instance.UpdateAmmo(playerShooting.GetCurrentAmmo(), playerShooting.GetMaxAmmo());
+        }
+    }
+
+    void LoadSavedStats()
+    {
+        Debug.Log("Loading Saved Stats from GlobalData...");
+
+        // --- HEALTH ---
+        if (GlobalData.PlayerHealth > 0) playerHP.SetHealth(GlobalData.PlayerHealth);
+        if (GlobalData.HouseHealth > 0) houseHP.SetHealth(GlobalData.HouseHealth);
+
+        // --- COINS ---
+        // Directly set the coins variable
+        if (playerCoins != null)
+        {
+            playerCoins.coins = GlobalData.Coins;
+        }
+
+        // --- AMMO ---
+        if (playerShooting != null)
+        {
+            playerShooting.SetAmmo(GlobalData.Ammo);
+        }
+
+        // --- HOLY WATER ---
+        if (playerThrowing != null)
+        {
+            playerThrowing.holyWaterAmmo = GlobalData.HolyWaterAmmo;
+        }
+    }
+
+    /*private void Start()
     {
         // Ensure the Game Over screen is hidden when the night starts
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
 
         Time.timeScale = 1f; // Ensure game is running
-    }
+    }*/
 
     // --- CALLED BY HP SCRIPT ---
     public void ShowGameOver()

@@ -38,6 +38,13 @@ public class PlayerShooting : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
             Reload();
     }
+    public void SetAmmo(int amount)
+    {
+        currentAmmo = Mathf.Clamp(amount, 0, maxAmmo);
+        UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
+
+    }
+
 
     void Shoot()
     {
@@ -87,11 +94,12 @@ public class PlayerShooting : MonoBehaviour
         UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
     }
 
+    /*    
     public void SetAmmo(int amount)
     {
         currentAmmo = Mathf.Clamp(amount, 0, maxAmmo);
         UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
-    }
+    }*/
 
     public int GetCurrentAmmo() => currentAmmo;
     public int GetMaxAmmo() => maxAmmo;

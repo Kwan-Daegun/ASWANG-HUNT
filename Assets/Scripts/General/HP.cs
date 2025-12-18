@@ -45,6 +45,13 @@ public class HP : MonoBehaviour
             BarMask.fillAmount = fill;
         }
     }
+    // Add this to HP.cs so we can load saved health and update the UI bar instantly
+    public void SetHealth(float value)
+    {
+        currentBarValue = Mathf.Clamp(value, 0, maxBarValue);
+        UpdateUI(); // This ensures the visual bar matches the number immediately
+    }
+
 
     public void AddHealth(float number)
     {
