@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerShooting : MonoBehaviour
 {
@@ -9,17 +9,18 @@ public class PlayerShooting : MonoBehaviour
     public int maxAmmo = 30;
     private int currentAmmo;
 
+    private PlayerAnimation playerAnimation;
+
     void Start()
     {
-        /*currentAmmo = Mathf.Clamp(GlobalData.Ammo, 0, maxAmmo);
-        UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);*/
-        // IMPORTANT: Load ammo from GlobalData
-        // If GlobalData.Ammo is 0, this will be 0. If we bought 10, this should be 10.
+        // Load ammo from GlobalData
         currentAmmo = GlobalData.Ammo;
 
         // Update the UI
         UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
 
+        // Get PlayerAnimation component
+        playerAnimation = GetComponent<PlayerAnimation>();
     }
 
     void Update()
@@ -36,13 +37,18 @@ public class PlayerShooting : MonoBehaviour
 
     void Shoot()
     {
-        if (bulletPrefab == null || firePoint == null) return;
+        if (bulletPrefab == null || firePoint == null)
+            return;
 
         if (currentAmmo <= 0)
             return;
 
         currentAmmo--;
         UIManager.Instance.UpdateAmmo(currentAmmo, maxAmmo);
+
+        // ▶ PLAY SHOOT ANIMATION
+        if (playerAnimation != null)
+            playerAnimation.PlayShootAnimation();
 
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0;

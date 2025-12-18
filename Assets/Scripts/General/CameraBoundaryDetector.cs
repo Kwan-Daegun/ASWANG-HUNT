@@ -1,23 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class CameraBoundaryDetector : MonoBehaviour
 {
-    public GameObject player;
-    public GameObject virtualCamera1;
-    private void OnTriggerExit2D(Collider2D collision)
+    [SerializeField] private int activePriority = 20;
+    [SerializeField] private int inactivePriority = 5;
+
+    private CinemachineVirtualCamera vCam;
+
+    private void Awake()
     {
-        if (collision.gameObject == player)
-        {
-            virtualCamera1.gameObject.SetActive(true);
-        }
+        vCam = GetComponent<CinemachineVirtualCamera>();
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject == player) 
-        {
-            virtualCamera1.gameObject.SetActive(false);
-        }
+        if (!collision.CompareTag("Player"))
+            return;
+
+        if (vCam == null)
+            return;
+
+        vCam.Priority = inactivePriority;
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (!collision.CompareTag("Player"))
+            return;
+
+        if (vCam == null)
+            return;
+
+        vCam.Priority = activePriority;
     }
 }

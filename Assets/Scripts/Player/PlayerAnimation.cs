@@ -4,11 +4,16 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerAnimation : MonoBehaviour
 {
+    [Header("Sprites")]
     [SerializeField] private Sprite[] idleSprites;
     [SerializeField] private Sprite[] walkSprites;
     [SerializeField] private Sprite[] shootSprites;
+    [SerializeField] private Sprite[] meleeSprites;
+
+    [Header("Speeds")]
     [SerializeField] private float animationSpeed = 0.12f;
     [SerializeField] private float shootAnimSpeed = 0.06f;
+    [SerializeField] private float meleeAnimSpeed = 0.07f;
 
     private SpriteRenderer sr;
     private Rigidbody2D rb;
@@ -17,7 +22,8 @@ public class PlayerAnimation : MonoBehaviour
     private int frame;
 
     private bool isShooting;
-    private float shootTimer;
+    private bool isMelee;
+    private float actionTimer;
 
     private void Awake()
     {
@@ -27,12 +33,23 @@ public class PlayerAnimation : MonoBehaviour
 
     private void Update()
     {
+        if (isMelee)
+        {
+            PlayMelee();
+            return;
+        }
+
         if (isShooting)
         {
             PlayShoot();
             return;
         }
 
+        PlayMovement();
+    }
+
+    private void PlayMovement()
+    {
         bool isWalking = Mathf.Abs(rb.velocity.x) > 0.05f;
 
         timer += Time.deltaTime;
@@ -56,20 +73,14 @@ public class PlayerAnimation : MonoBehaviour
 
     private void PlayShoot()
     {
-        shootTimer += Time.deltaTime;
-        if (shootTimer >= shootAnimSpeed)
+        actionTimer += Time.deltaTime;
+        if (actionTimer >= shootAnimSpeed)
         {
-            shootTimer = 0f;
+            actionTimer = 0f;
             frame++;
         }
 
-        if (shootSprites.Length == 0)
-        {
-            isShooting = false;
-            return;
-        }
-
-        if (frame >= shootSprites.Length)
+        if (shootSprites.Length == 0 || frame >= shootSprites.Length)
         {
             isShooting = false;
             frame = 0;
@@ -79,13 +90,44 @@ public class PlayerAnimation : MonoBehaviour
         sr.sprite = shootSprites[frame];
     }
 
+    private void PlayMelee()
+    {
+        actionTimer += Time.deltaTime;
+        if (actionTimer >= meleeAnimSpeed)
+        {
+            actionTimer = 0f;
+            frame++;
+        }
+
+        if (meleeSprites.Length == 0 || frame >= meleeSprites.Length)
+        {
+            isMelee = false;
+            frame = 0;
+            return;
+        }
+
+        sr.sprite = meleeSprites[frame];
+    }
+
     public void PlayShootAnimation()
     {
         if (shootSprites.Length == 0) return;
 
         isShooting = true;
+        isMelee = false;
         frame = 0;
         timer = 0f;
-        shootTimer = 0f;
+        actionTimer = 0f;
+    }
+
+    public void PlayMeleeAnimation()
+    {
+        if (meleeSprites.Length == 0) return;
+
+        isMelee = true;
+        isShooting = false;
+        frame = 0;
+        timer = 0f;
+        actionTimer = 0f;
     }
 }

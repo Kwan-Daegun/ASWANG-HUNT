@@ -12,12 +12,12 @@ public class BossController : MonoBehaviour
     [Header("Attack Settings")]
     public float meleeRange = 1.5f;
     public float tongueRange = 6f;
-    public int attacksToSwitchTarget = 3; // Switch target every 3 attacks
+    public int attacksToSwitchTarget = 3;
 
     [Header("Flight Settings")]
     public float hoverAmplitude = 0.5f;
     public float hoverFrequency = 2f;
-    public float hoverSideOffset = 4f; // How far to the left/right it hovers
+    public float hoverSideOffset = 4f;
 
     [Header("References")]
     public Transform player;
@@ -31,10 +31,9 @@ public class BossController : MonoBehaviour
     public float attackCooldown = 0f;
     public bool isAttacking = false;
 
-    // AI Logic State
     public Transform currentTarget;
     private int attackCounter = 0;
-    private float currentHoverSide = 1f; // 1 = Right, -1 = Left
+    private float currentHoverSide = 1f;
 
     private enum State { Idle, Chasing, Attacking, Transitioning }
     private State currentState = State.Idle;
@@ -43,11 +42,7 @@ public class BossController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
-
-        // Start by targeting the player
         currentTarget = player;
-
-        // Pick a random side to start hovering
         PickRandomSide();
     }
 
@@ -55,7 +50,6 @@ public class BossController : MonoBehaviour
     {
         if (currentHealth <= 0) return;
 
-        // --- PHASE CHECK ---
         if (currentHealth <= maxHealth * 0.5f && !isFlying)
         {
             StartCoroutine(TransitionToFlight());
@@ -64,20 +58,12 @@ public class BossController : MonoBehaviour
 
         if (currentState == State.Transitioning) return;
 
-        // Cooldown Timer
         if (attackCooldown > 0) attackCooldown -= Time.deltaTime;
 
-        // Note: We removed SelectTarget() from here because we now 
-        // strictly control target switching in the Attack Logic.
-
         if (isFlying)
-        {
             HandleFlyingBehavior();
-        }
         else
-        {
             HandleGroundBehavior();
-        }
     }
 
     void HandleGroundBehavior()
@@ -88,19 +74,20 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        // Safety check: if target is null (game start), default to player
         if (currentTarget == null) currentTarget = player;
 
         float distance = Vector2.Distance(transform.position, currentTarget.position);
         bool didAttack = false;
 
-        // If Cooldown is ready, check for attacks
         if (attackCooldown <= 0)
         {
             if (isOnRoof && currentTarget == houseCenter)
             {
-                StartCoroutine(PerformAttack("RoofSmash", 1.0f));
-                didAttack = true;
+                if (Vector2.Distance(transform.position, houseCenter.position) <= meleeRange + 0.5f) // strict range
+                {
+                    StartCoroutine(PerformAttack("RoofSmash", 1.0f));
+                    didAttack = true;
+                }
             }
             else if (distance <= meleeRange)
             {
@@ -114,7 +101,6 @@ public class BossController : MonoBehaviour
             }
         }
 
-        // If not attacking, chase the current target
         if (!didAttack)
         {
             MoveTowardsGround(currentTarget.position, moveSpeed);
@@ -125,12 +111,10 @@ public class BossController : MonoBehaviour
     {
         if (isAttacking) return;
 
-        // Safety check
         if (currentTarget == null) currentTarget = player;
 
         float distance = Vector2.Distance(transform.position, currentTarget.position);
 
-        // 1. ATTACK RUN: If cooldown is ready, fly DIRECTLY at target
         if (attackCooldown <= 0)
         {
             if (distance <= meleeRange)
@@ -139,31 +123,19 @@ public class BossController : MonoBehaviour
             }
             else
             {
-                // Fly straight to target to close distance
                 Vector2 newPos = Vector2.MoveTowards(transform.position, currentTarget.position, flySpeed * Time.deltaTime);
                 rb.MovePosition(newPos);
                 FlipSprite(currentTarget.position);
             }
         }
-        // 2. FLANKING: If cooling down, hover to the SIDE
         else
         {
-            Vector2 targetPos = currentTarget.position;
-
-            // Calculate "Flank" Position: Target + (Side Offset) + (Up Offset)
-            // This puts the boss to the Left or Right of the player
             float xOffset = currentHoverSide * hoverSideOffset;
-
-            // Add the bobbing effect
             float yBob = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
+            Vector2 hoverTarget = new Vector2(currentTarget.position.x + xOffset, currentTarget.position.y + yBob + 2.0f);
 
-            Vector2 hoverTarget = new Vector2(targetPos.x + xOffset, targetPos.y + yBob + 2.0f);
-
-            // Move smoothly to the flank position
             Vector2 newPos = Vector2.MoveTowards(transform.position, hoverTarget, flySpeed * Time.deltaTime);
             rb.MovePosition(newPos);
-
-            // Still look at the player even while flying sideways
             FlipSprite(currentTarget.position);
         }
     }
@@ -179,19 +151,47 @@ public class BossController : MonoBehaviour
     IEnumerator PerformAttack(string attackType, float duration)
     {
         isAttacking = true;
-        attackCooldown = 2.0f; // Reset cooldown
+        attackCooldown = 2.0f;
 
-        Debug.Log("Attack: " + attackType + " | Target: " + currentTarget.name);
+        yield return new WaitForSeconds(duration * 0.5f); // wait until hit frame
 
-        // Wait for animation
-        yield return new WaitForSeconds(duration);
+        // --- APPLY DAMAGE STRICTLY WITHIN RANGE ---
+        if (currentTarget != null)
+        {
+            float distance = Vector2.Distance(transform.position, currentTarget.position);
+            HP targetHP = currentTarget.GetComponent<HP>();
 
+            if (targetHP != null)
+            {
+                int damage = 0;
+
+                switch (attackType)
+                {
+                    case "Claw":
+                        if (distance <= meleeRange) damage = 10;
+                        break;
+                    case "Tongue":
+                        if (distance <= tongueRange) damage = 7;
+                        break;
+                    case "SwoopClaw":
+                        if (distance <= meleeRange) damage = 10;
+                        break;
+                    case "RoofSmash":
+                        if (currentTarget == houseCenter && distance <= meleeRange) damage = 15;
+                        break;
+                }
+
+                if (damage > 0)
+                {
+                    targetHP.SubHealth(damage);
+                    Debug.Log("Boss dealt " + damage + " damage to " + currentTarget.name);
+                }
+            }
+        }
+
+        yield return new WaitForSeconds(duration * 0.5f);
         isAttacking = false;
-
-        // --- LOGIC: Increment Counter and maybe Switch Target ---
         attackCounter++;
-
-        // Pick a new side to hover for variety (Left or Right)
         PickRandomSide();
 
         if (attackCounter >= attacksToSwitchTarget)
@@ -203,22 +203,12 @@ public class BossController : MonoBehaviour
 
     void SwitchTarget()
     {
-        // Toggle between Player and House
-        if (currentTarget == player)
-        {
-            currentTarget = houseCenter;
-            Debug.Log("Boss switching target to: HOUSE");
-        }
-        else
-        {
-            currentTarget = player;
-            Debug.Log("Boss switching target to: PLAYER");
-        }
+        currentTarget = (currentTarget == player) ? houseCenter : player;
+        Debug.Log("Boss switching target to: " + currentTarget.name);
     }
 
     void PickRandomSide()
     {
-        // Randomly choose -1 (Left) or 1 (Right)
         currentHoverSide = (Random.Range(0, 2) == 0) ? -1f : 1f;
     }
 
@@ -227,7 +217,6 @@ public class BossController : MonoBehaviour
         currentState = State.Transitioning;
         rb.gravityScale = 0;
         rb.velocity = Vector2.zero;
-        Debug.Log("Phase 2 START");
 
         yield return new WaitForSeconds(1.5f);
 
@@ -237,8 +226,7 @@ public class BossController : MonoBehaviour
 
     void FlipSprite(Vector3 target)
     {
-        if (target.x > transform.position.x) transform.localScale = new Vector3(1, 1, 1);
-        else transform.localScale = new Vector3(-1, 1, 1);
+        transform.localScale = (target.x > transform.position.x) ? new Vector3(1, 1, 1) : new Vector3(-1, 1, 1);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

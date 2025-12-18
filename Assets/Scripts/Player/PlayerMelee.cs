@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class PlayerMelee : MonoBehaviour
@@ -25,9 +25,12 @@ public class PlayerMelee : MonoBehaviour
     private AudioSource audioSource;
     private float cooldownTimer = 0f;
     private SpriteRenderer slashRenderer;
+    private PlayerAnimation playerAnimation;
+
 
     private void Start()
     {
+        playerAnimation = GetComponent<PlayerAnimation>();
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
@@ -56,6 +59,10 @@ public class PlayerMelee : MonoBehaviour
 
     private IEnumerator PerformAttackSequence()
     {
+        // ▶ PLAY PLAYER MELEE ANIMATION
+        if (playerAnimation != null)
+            playerAnimation.PlayMeleeAnimation();
+
         if (attackSound != null && audioSource != null)
             audioSource.PlayOneShot(attackSound);
 
@@ -71,8 +78,6 @@ public class PlayerMelee : MonoBehaviour
         }
 
         int finalDamage = Mathf.RoundToInt(baseDamage * GlobalData.DamageMultiplier);
-
-        // DAMAGE LOGIC: Handles null attackOrigin automatically
         Vector2 origin = (attackOrigin != null) ? attackOrigin.position : transform.position;
 
         Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(origin, attackRadius, enemyMask);
@@ -81,11 +86,10 @@ public class PlayerMelee : MonoBehaviour
         {
             HP enemyHP = enemy.GetComponent<HP>();
             if (enemyHP != null)
-            {
                 enemyHP.SubHealth(finalDamage);
-            }
         }
     }
+
 
     // --- IMPROVED GIZMO DRAWING ---
     private void OnDrawGizmos()
