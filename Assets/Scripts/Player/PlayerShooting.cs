@@ -11,6 +11,10 @@ public class PlayerShooting : MonoBehaviour
 
     private PlayerAnimation playerAnimation;
 
+    // ▶ Audio
+    public AudioSource shootingAudioSource; // Assign in Inspector
+    public AudioClip shootClip;             // Assign shooting sound in Inspector
+
     void Start()
     {
         // Load ammo from GlobalData
@@ -49,6 +53,10 @@ public class PlayerShooting : MonoBehaviour
         // ▶ PLAY SHOOT ANIMATION
         if (playerAnimation != null)
             playerAnimation.PlayShootAnimation();
+
+        // ▶ PLAY SHOOT SOUND
+        if (shootingAudioSource != null && shootClip != null)
+            shootingAudioSource.PlayOneShot(shootClip);
 
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0;
